@@ -20,8 +20,9 @@
 namespace {
 
 auto get_upgrade_packages(alpm_handle_t* handle) noexcept -> QStringList {
-    if (handle == nullptr)
+    if (handle == nullptr) {
         return {};
+    }
 
     QStringList upgrade_packages;
 
@@ -68,8 +69,11 @@ void PacmanCache::refresh_list() noexcept {
     m_upd_candidates = get_upgrade_packages(m_handle);
 
     for (int i = 0; i < package_list.size(); ++i) {
-        if (m_candidates.contains(package_list.at(i)) && (VersionNumber(version_list.at(i).toStdString()) <= VersionNumber(m_candidates.at(package_list.at(i)).at(0).toStdString())))
+        const auto& package = package_list.at(i);
+        const auto& version = version_list.at(i);
+        if (m_candidates.contains(package) && (VersionNumber(version.toStdString()) <= VersionNumber(m_candidates.at(package).at(0).toStdString()))) {
             continue;
-        m_candidates[package_list.at(i)] = (QStringList() << version_list.at(i) << description_list.at(i));
+        }
+        m_candidates[package] = (QStringList() << version << description_list.at(i));
     }
 }

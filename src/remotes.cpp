@@ -24,26 +24,24 @@
 
 #include <spdlog/spdlog.h>
 
-ManageRemotes::ManageRemotes(QWidget* parent) : QDialog(parent) {
+ManageRemotes::ManageRemotes(QWidget* parent)
+  : QDialog(parent), cmd(new Cmd(this)),
+    comboRemote(new QComboBox(this)),
+    comboUser(new QComboBox(this)),
+    editAddRemote(new QLineEdit(this)),
+    editInstallFlatpakref(new QLineEdit(this)) {
+
     setWindowTitle(tr("Manage Flatpak Remotes"));
-    changed = false;
-    cmd     = new Cmd(this);
-    user    = "--system ";
 
     auto* layout = new QGridLayout();
     setLayout(layout);
 
-    comboUser = new QComboBox(this);
     comboUser->addItem(tr("For all users"));
     comboUser->addItem(tr("For current user"));
 
-    comboRemote = new QComboBox(this);
-
-    editAddRemote = new QLineEdit(this);
     editAddRemote->setMinimumWidth(400);
     editAddRemote->setPlaceholderText(tr("enter Flatpak remote URL"));
 
-    editInstallFlatpakref = new QLineEdit(this);
     editInstallFlatpakref->setPlaceholderText(tr("enter Flatpakref location to install app"));
 
     auto* label = new QLabel(tr("Add or remove flatpak remotes (repos), or install apps using flatpakref URL or path"));
@@ -90,16 +88,16 @@ void ManageRemotes::removeItem() noexcept {
         return;
     }
     changed = true;
-    cmd->run("runuser -s /bin/bash -l $(logname) -c \"flatpak remote-delete " + user + comboRemote->currentText().toUtf8() + "\"");
+    cmd->run("flatpak remote-delete " + user + comboRemote->currentText().toUtf8());
     comboRemote->removeItem(comboRemote->currentIndex());
 }
 
 void ManageRemotes::addItem() noexcept {
     setCursor(QCursor(Qt::BusyCursor));
-    QString location = editAddRemote->text();
-    QString name     = editAddRemote->text().section("/", -1).section(".", 0, 0);  // obtain the name before .flatpakremo
+    const auto location = editAddRemote->text();
+    const auto name     = editAddRemote->text().section('.', -1).section('.', 0, 0);  // obtain the name before .flatpakremo
 
-    if (!cmd->run("runuser -s /bin/bash -l $(logname) -c \"flatpak remote-add --if-not-exists " + user + name.toUtf8() + " " + location.toUtf8() + "\"")) {
+    if (!cmd->run("flatpak remote-add --if-not-exists " + user + name.toUtf8() + " " + location.toUtf8())) {
         setCursor(QCursor(Qt::ArrowCursor));
         QMessageBox::critical(this, tr("Error adding remote"), tr("Could not add remote - command returned an error. Please double-check the remote address and try again"));
     } else {
@@ -122,7 +120,7 @@ void ManageRemotes::userSelected(int index) noexcept {
     } else {
         user = "--user ";
         setCursor(QCursor(Qt::BusyCursor));
-        cmd->run("runuser -s /bin/bash -l $(logname) -c \"flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo\"");
+        cmd->run("flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo");
         setCursor(QCursor(Qt::ArrowCursor));
     }
     listFlatpakRemotes();
@@ -132,6 +130,6 @@ void ManageRemotes::userSelected(int index) noexcept {
 void ManageRemotes::listFlatpakRemotes() const noexcept {
     spdlog::debug("+++{}+++", __PRETTY_FUNCTION__);
     comboRemote->clear();
-    QStringList list = cmd->getCmdOut("runuser -s /bin/bash -l $(logname) -c \"flatpak remote-list " + user + "\"").split("\n");
-    comboRemote->addItems(list);
+    const auto remote_list = cmd->getCmdOut("flatpak remote-list " + user).split('\n');
+    comboRemote->addItems(remote_list);
 }

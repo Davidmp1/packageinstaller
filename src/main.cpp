@@ -63,7 +63,9 @@
 
 namespace fs = std::filesystem;
 
-static bool IsInstanceAlreadyRunning(QSharedMemory& memoryLock) {
+namespace {
+
+bool IsInstanceAlreadyRunning(QSharedMemory& memoryLock) noexcept {
     if (!memoryLock.create(1)) {
         memoryLock.attach();
         memoryLock.detach();
@@ -80,7 +82,7 @@ static bool IsInstanceAlreadyRunning(QSharedMemory& memoryLock) {
  * Licensed under MIT
  */
 /** Set up translations */
-static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTranslator, QTranslator& translatorBase, QTranslator& translator) {
+void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTranslator, QTranslator& translatorBase, QTranslator& translator) noexcept {
     // Remove old translators
     QApplication::removeTranslator(&qtTranslatorBase);
     QApplication::removeTranslator(&qtTranslator);
@@ -89,7 +91,7 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
 
     // Get desired locale (e.g. "de_DE")
     // 1) System default language
-    QString lang_territory = QLocale::system().name();
+    const auto lang_territory = QLocale::system().name();
 
     // Convert to "de" only by truncating "_DE"
     QString lang = lang_territory;
@@ -100,9 +102,9 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
     // - Then load the more specific locale translator
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    const QString translation_path{QLibraryInfo::location(QLibraryInfo::TranslationsPath)};
+    const auto translation_path{QLibraryInfo::location(QLibraryInfo::TranslationsPath)};
 #else
-    const QString translation_path{QLibraryInfo::path(QLibraryInfo::TranslationsPath)};
+    const auto translation_path{QLibraryInfo::path(QLibraryInfo::TranslationsPath)};
 #endif
 
     // Load e.g. qt_de.qm
@@ -126,7 +128,9 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
     }
 }
 
-int main(int argc, char* argv[]) {
+}  // namespace
+
+auto main(int argc, char** argv) -> std::int32_t {
     /// 1. Basic Qt initialization (not dependent on parameters or configuration)
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     // Generate high-dpi pixmaps
@@ -140,11 +144,14 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationName("cachyos-pi");
 
     // Set application attributes
-    QApplication app(argc, argv);
+    const QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":/icons/cachyos-pi.png"));
 
     /// 3. Initialization of translations
-    QTranslator qtTranslatorBase, qtTranslator, translatorBase, translator;
+    QTranslator qtTranslatorBase;
+    QTranslator qtTranslator;
+    QTranslator translatorBase;
+    QTranslator translator;
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
     QSharedMemory sharedMemoryLock("CachyOS-PI-lock");
@@ -203,7 +210,7 @@ int main(int argc, char* argv[]) {
     const auto& log_filepath = fmt::format("{}/cachyospi.log", cache_path.toStdString());
     if (fs::exists(log_filepath)) {
         std::ifstream currentfile{log_filepath};
-        std::string file_data{std::istreambuf_iterator<char>(currentfile), std::istreambuf_iterator<char>()};
+        const std::string file_data{std::istreambuf_iterator<char>(currentfile), std::istreambuf_iterator<char>()};
         std::ofstream oldlogfile{fmt::format("{}.old", log_filepath)};
         oldlogfile << "-----------------------------------------------------------\nCACHYOSPI SESSION\n"
                       "-----------------------------------------------------------\n";

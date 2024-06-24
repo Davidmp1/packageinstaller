@@ -46,6 +46,7 @@
 #include "versionnumber.hpp"
 
 #include <map>
+#include <string_view>
 
 #include <QProgressDialog>
 #include <QSettings>
@@ -111,7 +112,7 @@ class MainWindow : public QDialog {
     [[nodiscard]] bool checkInstalled(const QString& names) const;
     [[nodiscard]] bool checkInstalled(const QStringList& name_list) const;
     [[nodiscard]] bool checkUpgradable(const QStringList& name_list) const;
-    bool confirmActions(const QString& names, const QString& action, bool& is_ok);
+    bool confirmActions(const QString& names, std::string_view action, bool& is_ok);
     bool downloadPackageList(bool force_download = false);
     bool install(const QString& names);
     bool installBatch(const QStringList& name_list);
@@ -174,7 +175,7 @@ class MainWindow : public QDialog {
     void updateBar();
 
     void on_pushAbout_clicked();
-    void on_pushHelp_clicked();
+    static void on_pushHelp_clicked();
     void on_pushInstall_clicked();
     void on_pushUninstall_clicked();
     void on_tabWidget_currentChanged(int index);

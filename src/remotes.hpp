@@ -39,16 +39,16 @@ class ManageRemotes : public QDialog {
     void removeItem() noexcept;
     void addItem() noexcept;
     void setInstall() noexcept;
-    void userSelected(int selected) noexcept;
+    void userSelected(int index) noexcept;
 
  private:
     bool changed{};
-    Cmd* cmd;
+    Cmd* cmd{};
     QComboBox* comboRemote;
     QComboBox* comboUser;
     QLineEdit* editAddRemote;
     QLineEdit* editInstallFlatpakref;
-    QString user{};
+    QString user{"--system "};
     QString install_ref{};
 };
 

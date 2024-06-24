@@ -23,11 +23,13 @@
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
 
-typedef struct _pm_target_t {
+namespace {
+
+struct pm_target_t {
     alpm_pkg_t* remove;
     alpm_pkg_t* install;
     std::int32_t is_explicit;
-} pm_target_t;
+};
 
 /* callback to handle messages/notifications from libalpm */
 void cb_event(void* ctx, alpm_event_t* event);
@@ -42,7 +44,6 @@ __attribute__((format(printf, 3, 0))) void cb_log(void* ctx, alpm_loglevel_t lev
 void cb_event(void* ctx, alpm_event_t* event) {
     (void)ctx;
 
-    std::string opr{};
     switch (event->type) {
     case ALPM_EVENT_CHECKDEPS_START:
         spdlog::info("ALPM: checking dependencies...");
@@ -183,8 +184,6 @@ void cb_log(void* ctx, alpm_loglevel_t level, const char* fmt, va_list args) {
     }
 }
 
-namespace {
-
 inline std::size_t replace_all(std::string& inout, const std::string_view& what, const std::string_view& with) {
     std::size_t count{};
     std::size_t pos{};
@@ -197,16 +196,16 @@ inline std::size_t replace_all(std::string& inout, const std::string_view& what,
 
 void parse_cachedirs(alpm_handle_t* handle) noexcept {
     static constexpr auto cachedir = "/var/cache/pacman/pkg/";
-    alpm_list_t* cachedirs{nullptr};
-    cachedirs = alpm_list_add(cachedirs, const_cast<void*>(reinterpret_cast<const void*>(cachedir)));
+
+    auto* cachedirs = alpm_list_add(nullptr, const_cast<void*>(reinterpret_cast<const void*>(cachedir)));
     alpm_option_set_cachedirs(handle, cachedirs);
 }
 
-void parse_includes(alpm_handle_t* handle, alpm_db_t* db, const auto& section, const auto& file) noexcept {
-    const auto* archs = alpm_option_get_architectures(handle);
-    const auto* arch  = reinterpret_cast<const char*>(archs->data);
+void parse_includes(alpm_handle_t* handle, alpm_db_t* db, std::string_view section, std::string_view file) noexcept {
+    const auto* archs           = alpm_option_get_architectures(handle);
+    const std::string_view arch = reinterpret_cast<const char*>(archs->data);
 
-    mINI::INIFile file_nested(file);
+    const mINI::INIFile file_nested(file);
     // next, create a structure that will hold data
     mINI::INIStructure mirrorlist;
 
@@ -214,11 +213,11 @@ void parse_includes(alpm_handle_t* handle, alpm_db_t* db, const auto& section, c
     file_nested.read(mirrorlist);
     for (const auto& mirror : mirrorlist) {
         auto repo = mirror.second.begin()->second;
-        if (repo.starts_with("/")) {
+        if (repo.starts_with('/')) {
             continue;
         }
         replace_all(repo, "$arch", arch);
-        replace_all(repo, "$repo", section.c_str());
+        replace_all(repo, "$repo", section);
         alpm_db_add_server(db, repo.c_str());
     }
 }
@@ -226,7 +225,7 @@ void parse_includes(alpm_handle_t* handle, alpm_db_t* db, const auto& section, c
 void parse_repos(alpm_handle_t* handle) noexcept {
     static constexpr auto pacman_conf_path = "/etc/pacman.conf";
 
-    mINI::INIFile file(pacman_conf_path);
+    const mINI::INIFile file(pacman_conf_path);
     // next, create a structure that will hold data
     mINI::INIStructure ini;
 
@@ -244,7 +243,7 @@ void parse_repos(alpm_handle_t* handle) noexcept {
                 const auto& archs = ::utils::make_multiline(it_nested.second, ' ');
                 for (const auto& arch : archs) {
                     if (arch == "auto") {
-                        struct utsname un;
+                        struct utsname un { };
                         uname(&un);
                         char* tmp = un.machine;
                         if (tmp != nullptr) {
@@ -309,12 +308,13 @@ auto _display_targets(const std::vector<pm_target_t>& targets, bool verbose, std
 
     // presentation
     const auto& proper_present = [](auto&& number) {
-        if (number < 1024)
+        if (number < 1024) {
             return fmt::format("{}", number);
-        else if (number < 1024 * 1024)
+        } else if (number < 1024 * 1024) {
             return fmt::format("{} KB", number / 1024);
-        else if (number < 1024 * 1024 * 1024)
+        } else if (number < 1024 * 1024 * 1024) {
             return fmt::format("{} MB", number / 1024 / 1024);
+        }
 
         return fmt::format("{} GB", number / 1024 / 1024 / 1024);
     };
@@ -368,7 +368,7 @@ auto display_targets(alpm_handle_t* handle, bool verbosepkglists, std::string& s
 
     for (alpm_list_t* i = alpm_trans_get_add(handle); i; i = alpm_list_next(i)) {
         auto* pkg = static_cast<alpm_pkg_t*>(i->data);
-        pm_target_t targ;
+        pm_target_t targ{};
         targ.install     = pkg;
         targ.is_explicit = false;
         targ.remove      = alpm_db_get_pkg(db_local, alpm_pkg_get_name(pkg));
@@ -376,13 +376,10 @@ auto display_targets(alpm_handle_t* handle, bool verbosepkglists, std::string& s
     }
     for (alpm_list_t* i = alpm_trans_get_remove(handle); i; i = alpm_list_next(i)) {
         auto* pkg = static_cast<alpm_pkg_t*>(i->data);
-        pm_target_t targ;
+        pm_target_t targ{};
         targ.install     = nullptr;
         targ.is_explicit = false;
         targ.remove      = pkg;
-        // if(alpm_list_find(config->explicit_removes, pkg, pkg_cmp)) {
-        //     targ->is_explicit = 1;
-        // }
         targets.emplace_back(targ);
     }
     return _display_targets(targets, verbosepkglists, status_text);
@@ -434,21 +431,12 @@ void add_targets_to_remove(alpm_handle_t* handle, const std::vector<std::string>
     }
 }
 
-static void trans_init_error(alpm_handle_t* handle) noexcept {
-    alpm_errno_t err = alpm_errno(handle);
+void trans_init_error(alpm_handle_t* handle) noexcept {
+    const auto err = alpm_errno(handle);
     spdlog::error("error: failed to init transaction ({})", alpm_strerror(err));
-    if (err == ALPM_ERR_HANDLE_LOCK) {
-        const char* lockfile = alpm_option_get_lockfile(handle);
-        spdlog::error("error: could not lock database: {}", strerror(errno));
-        if (access(lockfile, F_OK) == 0) {
-            spdlog::error("\n  if you're sure a package manager is not already\n"
-                          "  running, you can remove {}",
-                lockfile);
-        }
-    }
 }
 
-static auto trans_release(alpm_handle_t* handle) noexcept -> std::int32_t {
+auto trans_release(alpm_handle_t* handle) noexcept -> std::int32_t {
     if (alpm_trans_release(handle) == -1) {
         spdlog::error("error: failed to release transaction ({})", alpm_strerror(alpm_errno(handle)));
         return -1;
@@ -456,7 +444,7 @@ static auto trans_release(alpm_handle_t* handle) noexcept -> std::int32_t {
     return 0;
 }
 
-static auto get_db(alpm_handle_t* handle, std::string_view dbname) noexcept -> alpm_db_t* {
+auto get_db(alpm_handle_t* handle, std::string_view dbname) noexcept -> alpm_db_t* {
     for (alpm_list_t* i = alpm_get_syncdbs(handle); i; i = i->next) {
         auto* db = static_cast<alpm_db_t*>(i->data);
         if (std::string_view{alpm_db_get_name(db)} == dbname) {
@@ -466,16 +454,16 @@ static auto get_db(alpm_handle_t* handle, std::string_view dbname) noexcept -> a
     return nullptr;
 }
 
-static bool process_pkg(alpm_handle_t* handle, alpm_pkg_t* pkg) noexcept {
+bool process_pkg(alpm_handle_t* handle, alpm_pkg_t* pkg) noexcept {
     if (alpm_add_pkg(handle, pkg) == -1) {
-        alpm_errno_t err = alpm_errno(handle);
+        const auto err = alpm_errno(handle);
         spdlog::error("error: '{}': {}\n", alpm_pkg_get_name(pkg), alpm_strerror(err));
         return true;
     }
     return false;
 }
 
-static bool group_exists(alpm_list_t* dbs, std::string_view group_name) noexcept {
+bool group_exists(alpm_list_t* dbs, std::string_view group_name) noexcept {
     for (alpm_list_t* i = dbs; i; i = i->next) {
         auto* db = static_cast<alpm_db_t*>(i->data);
         if (alpm_db_get_group(db, group_name.data())) {
@@ -486,10 +474,10 @@ static bool group_exists(alpm_list_t* dbs, std::string_view group_name) noexcept
     return false;
 }
 
-static auto process_group(alpm_handle_t* handle, alpm_list_t* dbs, std::string_view group, std::int32_t error) noexcept -> std::int32_t {
+auto process_group(alpm_handle_t* handle, alpm_list_t* dbs, std::string_view group, std::int32_t error) noexcept -> std::int32_t {
     alpm_list_t* pkgs = alpm_find_group_pkgs(dbs, group.data());
-    size_t count      = alpm_list_count(pkgs);
 
+    const auto count = alpm_list_count(pkgs);
     if (!count) {
         if (group_exists(dbs, group)) {
             return 0;
@@ -521,8 +509,8 @@ cleanup:
     return ret;
 }
 
-static auto process_targname(alpm_handle_t* handle, alpm_list_t* dblist, std::string_view targname, std::int32_t error) noexcept -> std::int32_t {
-    alpm_pkg_t* pkg = alpm_find_dbs_satisfier(handle, dblist, targname.data());
+auto process_targname(alpm_handle_t* handle, alpm_list_t* dblist, std::string_view targname, std::int32_t error) noexcept -> std::int32_t {
+    auto* pkg = alpm_find_dbs_satisfier(handle, dblist, targname.data());
 
     /* skip ignored packages when user says no */
     if (alpm_errno(handle) == ALPM_ERR_PKG_IGNORED) {
@@ -537,7 +525,7 @@ static auto process_targname(alpm_handle_t* handle, alpm_list_t* dblist, std::st
     return process_group(handle, dblist, targname, error);
 }
 
-static auto process_target(alpm_handle_t* handle, std::string_view target, std::int32_t error) noexcept -> std::int32_t {
+auto process_target(alpm_handle_t* handle, std::string_view target, std::int32_t error) noexcept -> std::int32_t {
     /* process targets */
     std::int32_t ret{};
 
@@ -545,10 +533,10 @@ static auto process_target(alpm_handle_t* handle, std::string_view target, std::
     auto pos = target.find('/');
     if (pos != std::string_view::npos && pos != 0) {
         // Split target into database name and target name
-        std::string_view dbname   = target.substr(0, pos);
-        std::string_view targname = target.substr(pos + 1);
+        const auto dbname   = target.substr(0, pos);
+        const auto targname = target.substr(pos + 1);
 
-        alpm_db_t* db = get_db(handle, dbname);
+        auto* db = get_db(handle, dbname);
         if (!db) {
             spdlog::error("error: database not found: {}", dbname);
             return 1;
@@ -575,8 +563,8 @@ static auto process_target(alpm_handle_t* handle, std::string_view target, std::
     return ret;
 }
 
-static auto check_syncdbs(alpm_handle_t* handle, size_t need_repos) noexcept -> std::int32_t {
-    auto* sync_dbs = alpm_get_syncdbs(handle);
+auto check_syncdbs(alpm_handle_t* handle, size_t need_repos) noexcept -> std::int32_t {
+    const auto* sync_dbs = alpm_get_syncdbs(handle);
     if (need_repos && sync_dbs == nullptr) {
         spdlog::error("error: no usable package repositories configured.");
         return 1;
@@ -584,7 +572,7 @@ static auto check_syncdbs(alpm_handle_t* handle, size_t need_repos) noexcept -> 
     return 0;
 }
 
-static auto trans_init(alpm_handle_t* handle, std::int32_t flags) noexcept -> std::int32_t {
+auto trans_init(alpm_handle_t* handle, std::int32_t flags) noexcept -> std::int32_t {
     if (check_syncdbs(handle, 0) == 1) {
         return -1;
     }
@@ -596,15 +584,14 @@ static auto trans_init(alpm_handle_t* handle, std::int32_t flags) noexcept -> st
     return 0;
 }
 
-static void print_broken_dep(alpm_handle_t* handle, alpm_depmissing_t* miss) noexcept {
+void print_broken_dep(alpm_handle_t* handle, alpm_depmissing_t* miss) noexcept {
     char* depstring        = alpm_dep_compute_string(miss->depend);
     alpm_list_t* trans_add = alpm_trans_get_add(handle);
-    alpm_pkg_t* pkg;
     if (miss->causingpkg == nullptr) {
         /* package being installed/upgraded has unresolved dependency */
         spdlog::warn("unable to satisfy dependency '{}' required by {}",
             depstring, miss->target);
-    } else if ((pkg = alpm_pkg_find(trans_add, miss->causingpkg))) {
+    } else if (auto* pkg = alpm_pkg_find(trans_add, miss->causingpkg)) {
         /* upgrading a package breaks a local dependency */
         spdlog::warn("installing {} ({}) breaks dependency '{}' required by {}",
             miss->causingpkg, alpm_pkg_get_version(pkg), depstring, miss->target);
@@ -616,14 +603,14 @@ static void print_broken_dep(alpm_handle_t* handle, alpm_depmissing_t* miss) noe
     free(depstring);
 }
 
-static auto sync_prepare_execute(alpm_handle_t* handle, std::string& conflict_msg) noexcept -> std::int32_t {
+auto sync_prepare_execute(alpm_handle_t* handle, std::string& conflict_msg) noexcept -> std::int32_t {
     alpm_list_t* packages = nullptr;
     alpm_list_t* data     = nullptr;
     std::int32_t retval{};
 
     /* Step 2: "compute" the transaction based on targets and flags */
     if (alpm_trans_prepare(handle, &data) == -1) {
-        alpm_errno_t err = alpm_errno(handle);
+        const auto err = alpm_errno(handle);
         spdlog::error("error: failed to prepare transaction ({})", alpm_strerror(err));
         switch (err) {
         case ALPM_ERR_PKG_INVALID_ARCH:
@@ -642,19 +629,22 @@ static auto sync_prepare_execute(alpm_handle_t* handle, std::string& conflict_ms
 
         case ALPM_ERR_CONFLICTING_DEPS:
             for (alpm_list_t* i = data; i; i = alpm_list_next(i)) {
-                auto* conflict = static_cast<alpm_conflict_t*>(i->data);
+                auto* conflict                       = static_cast<alpm_conflict_t*>(i->data);
+                const std::string_view pkg_conflict1 = alpm_pkg_get_name(conflict->package1);
+                const std::string_view pkg_conflict2 = alpm_pkg_get_name(conflict->package2);
+
                 /* only print reason if it contains new information */
                 if (conflict->reason->mod == ALPM_DEP_MOD_ANY) {
-                    conflict_msg += fmt::format("'{}' and '{}' are in conflict\n", alpm_pkg_get_name(conflict->package1), alpm_pkg_get_name(conflict->package2));
-                    spdlog::info("'{}' and '{}' are in conflict", alpm_pkg_get_name(conflict->package1), alpm_pkg_get_name(conflict->package2));
+                    conflict_msg += fmt::format("'{}' and '{}' are in conflict\n", pkg_conflict1, pkg_conflict2);
+                    spdlog::info("'{}' and '{}' are in conflict", pkg_conflict1, pkg_conflict2);
                 } else {
                     char* reason = alpm_dep_compute_string(conflict->reason);
-                    if (reason == nullptr) {
-                        conflict_msg += fmt::format("'{}' and '{}' are in conflict (null)\n", alpm_pkg_get_name(conflict->package1), alpm_pkg_get_name(conflict->package2));
-                        spdlog::info("'{}' and '{}' are in conflict (null)", alpm_pkg_get_name(conflict->package1), alpm_pkg_get_name(conflict->package2));
-                    } else {
-                        conflict_msg += fmt::format("'{}' and '{}' are in conflict ({})\n", alpm_pkg_get_name(conflict->package1), alpm_pkg_get_name(conflict->package2), reason);
-                        spdlog::info("'{}' and '{}' are in conflict ({})", alpm_pkg_get_name(conflict->package1), alpm_pkg_get_name(conflict->package2), reason);
+
+                    const std::string_view reason_str = reason ? reason : "null";
+
+                    conflict_msg += fmt::format("'{}' and '{}' are in conflict ({})\n", pkg_conflict1, pkg_conflict2, reason_str);
+                    spdlog::info("'{}' and '{}' are in conflict ({})", pkg_conflict1, pkg_conflict2, reason_str);
+                    if (reason != nullptr) {
                         free(reason);
                     }
                 }
@@ -693,7 +683,7 @@ auto sync_trans(alpm_handle_t* handle, const std::vector<std::string>& targets, 
     /* process targets */
     std::int32_t retval{};
     for (auto&& targ : targets) {
-        if (process_target(handle, targ.c_str(), retval) == 1) {
+        if (process_target(handle, targ, retval) == 1) {
             retval = 1;
         }
     }
