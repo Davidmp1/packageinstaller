@@ -110,6 +110,9 @@ void MainWindow::setup() noexcept {
 
     m_user = "--system ";
 
+    // Set comboUser to current user by default
+    m_ui->comboUser->setCurrentIndex(1);
+
     connect(qApp, &QApplication::aboutToQuit, this, &MainWindow::cleanup, Qt::QueuedConnection);
     m_ui->tabWidget->setCurrentIndex(Tab::Popular);
 
@@ -2020,15 +2023,16 @@ void MainWindow::on_push_upgrade_flatpak() noexcept {
 void MainWindow::on_push_remotes() noexcept {
     auto* dialog = new ManageRemotes(this);
     dialog->exec();
-    if (dialog->isChanged()) {
+    if (dialog->is_changed()) {
         listFlatpakRemotes();
         displayFlatpaks(true);
     }
-    if (!dialog->getInstallRef().isEmpty()) {
+    auto install_ref = dialog->get_install_ref();
+    if (!install_ref.isEmpty()) {
         showOutput();
         setCursor(QCursor(Qt::BusyCursor));
         displayOutput();
-        if (m_cmd.run("socat SYSTEM:'flatpak install -y " + dialog->getUser() + "--from " + dialog->getInstallRef().replace(':', "\\:") + "',stderr STDIO")) {
+        if (m_cmd.run("socat SYSTEM:'flatpak install -y " + dialog->get_user() + "--from " + install_ref.replace(':', "\\:") + "',stderr STDIO")) {
             listFlatpakRemotes();
             displayFlatpaks(true);
             setCursor(QCursor(Qt::ArrowCursor));

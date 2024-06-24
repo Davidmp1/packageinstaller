@@ -29,9 +29,9 @@ class ManageRemotes : public QDialog {
     explicit ManageRemotes(QWidget* parent = nullptr);
     void listFlatpakRemotes() const noexcept;
 
-    [[nodiscard]] bool isChanged() const noexcept { return changed; }
-    [[nodiscard]] QString getInstallRef() const noexcept { return install_ref; }
-    [[nodiscard]] QString getUser() const noexcept { return m_user; }
+    [[nodiscard]] bool is_changed() const noexcept { return m_changed; }
+    [[nodiscard]] const auto& get_install_ref() const noexcept { return m_install_ref; }
+    [[nodiscard]] const auto& get_user() const noexcept { return m_user; }
 
  signals:
 
@@ -42,14 +42,14 @@ class ManageRemotes : public QDialog {
     void userSelected(int index) noexcept;
 
  private:
-    bool changed{};
-    Cmd* cmd{};
-    QComboBox* comboRemote;
-    QComboBox* comboUser;
-    QLineEdit* editAddRemote;
-    QLineEdit* editInstallFlatpakref;
+    bool m_changed{};
+    Cmd* m_cmd{};
+    QComboBox* m_combo_remote;
+    QComboBox* m_combo_user;
+    QLineEdit* m_edit_add_remote;
+    QLineEdit* m_edit_install_flatpakref;
     QString m_user{"--system "};
-    QString install_ref{};
+    QString m_install_ref{};
 };
 
 #endif  // REMOTES_HPP
