@@ -180,7 +180,7 @@ class MainWindow : public QDialog {
     void cmdStart();
     void disableOutput();
     void disableWarning(bool checked);
-    void displayInfo(const QTreeWidgetItem* item, int column) const; // NOLINT
+    void displayInfo(const QTreeWidgetItem* item, int column) const;  // NOLINT
     void displayOutput();
     void displayPackageInfo(const QTreeWidgetItem* item);
     void filterChanged(const QString& arg1);
@@ -229,7 +229,6 @@ class MainWindow : public QDialog {
     QSettings m_settings{};
     QString m_repo_raw{};
     QString m_user{};
-    QString m_ver_name{};
     QStringList m_repo_upd_list{};
     QStringList m_change_list{};
     QStringList m_flatpaks{};
@@ -240,7 +239,6 @@ class MainWindow : public QDialog {
     QStringList m_installed_runtimes_fp{};
     QTimer m_timer{};
     QTreeWidget* m_tree{};  // current/calling tree
-    VersionNumber m_fp_ver{};
 
     std::unordered_map<QString, VersionNumber> listInstalledVersions();
 };

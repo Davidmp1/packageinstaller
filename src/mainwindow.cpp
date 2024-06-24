@@ -108,10 +108,7 @@ void MainWindow::setup() noexcept {
     font.setStyleHint(QFont::Monospace);
     m_ui->outputBox->setFont(font);
 
-    m_fp_ver = VersionNumber(this->get_package_version("flatpak"));
-    m_user   = "--system ";
-
-    m_ver_name = "nil";
+    m_user = "--system ";
 
     connect(qApp, &QApplication::aboutToQuit, this, &MainWindow::cleanup, Qt::QueuedConnection);
     m_ui->tabWidget->setCurrentIndex(Tab::Popular);
@@ -153,7 +150,6 @@ void MainWindow::setup() noexcept {
     m_ui->treeFlatpak->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     m_ui->tabWidget->setTabEnabled(m_ui->tabWidget->indexOf(m_ui->tabOutput), false);
-    m_ui->tabWidget->blockSignals(false);
 
     const QSize size = this->size();
     if (m_settings.contains("geometry")) {
@@ -182,6 +178,8 @@ void MainWindow::setup() noexcept {
         m_ui->tabWidget->setTabEnabled(Tab::Flatpak, false);
         m_ui->tabWidget->setTabVisible(Tab::Flatpak, false);
     }
+
+    m_ui->tabWidget->blockSignals(false);
 
     // connect buttons
     connect(m_ui->pushHelp, &QPushButton::clicked, [] {
@@ -2047,7 +2045,7 @@ void MainWindow::on_push_remotes() noexcept {
 }
 
 void MainWindow::on_comboUser_activated(int index) noexcept {
-    static bool updated = false;
+    static bool updated{};
     if (index == 0) {
         m_user = "--system ";
     } else {
@@ -2058,7 +2056,6 @@ void MainWindow::on_comboUser_activated(int index) noexcept {
             m_cmd.run("flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo");
             m_cmd.run("flatpak --user remote-add --if-not-exists --subset=verified flathub-verified https://flathub.org/repo/flathub.flatpakrepo");
 
-            displayOutput();
             m_cmd.run("flatpak update --appstream");
 
             setCursor(QCursor(Qt::ArrowCursor));
