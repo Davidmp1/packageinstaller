@@ -31,7 +31,7 @@ class ManageRemotes : public QDialog {
 
     [[nodiscard]] bool isChanged() const noexcept { return changed; }
     [[nodiscard]] QString getInstallRef() const noexcept { return install_ref; }
-    [[nodiscard]] QString getUser() const noexcept { return user; }
+    [[nodiscard]] QString getUser() const noexcept { return m_user; }
 
  signals:
 
@@ -48,7 +48,7 @@ class ManageRemotes : public QDialog {
     QComboBox* comboUser;
     QLineEdit* editAddRemote;
     QLineEdit* editInstallFlatpakref;
-    QString user{"--system "};
+    QString m_user{"--system "};
     QString install_ref{};
 };
 
