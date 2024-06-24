@@ -97,7 +97,7 @@ MainWindow::~MainWindow() {
 }
 
 // Setup versious items first time program runs
-void MainWindow::setup() {
+void MainWindow::setup() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->blockSignals(true);
     m_ui->pushRemoveOrphan->setHidden(true);
@@ -177,10 +177,28 @@ void MainWindow::setup() {
         m_ui->tabWidget->setTabEnabled(Tab::Flatpak, false);
         m_ui->tabWidget->setTabVisible(Tab::Flatpak, false);
     }
+
+    // connect buttons
+    connect(m_ui->pushHelp, &QPushButton::clicked, [] {
+        about::display_doc(QStringLiteral("file:///usr/share/doc/cachyos-packageinstaller/cachyos-pi.html"));
+    });
+
+    connect(m_ui->pushAbout, &QPushButton::clicked, this, &MainWindow::on_push_about);
+    connect(m_ui->pushInstall, &QPushButton::clicked, this, &MainWindow::on_push_install);
+    connect(m_ui->pushUninstall, &QPushButton::clicked, this, &MainWindow::on_push_uninstall);
+    connect(m_ui->pushRemoveUnused, &QPushButton::clicked, this, &MainWindow::on_push_remove_unused);
+    connect(m_ui->pushRemoveOrphan, &QPushButton::clicked, this, &MainWindow::on_push_remove_orphan);
+
+    connect(m_ui->pushForceUpdateRepo, &QPushButton::clicked, this, &MainWindow::on_push_force_update_repo);
+    connect(m_ui->pushCancel, &QPushButton::clicked, this, &MainWindow::on_push_cancel);
+    connect(m_ui->pushEnter, &QPushButton::clicked, this, &MainWindow::on_push_enter);
+    connect(m_ui->pushUpgradeAll, &QPushButton::clicked, this, &MainWindow::on_push_upgrade_all);
+    connect(m_ui->pushRemotes, &QPushButton::clicked, this, &MainWindow::on_push_remotes);
+    connect(m_ui->pushUpgradeFP, &QPushButton::clicked, this, &MainWindow::on_push_upgrade_flatpak);
 }
 
 // Uninstall listed packages
-bool MainWindow::uninstall(const QString& names) {
+bool MainWindow::uninstall(const QString& names) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->setCurrentWidget(m_ui->tabOutput);
 
@@ -218,7 +236,7 @@ constexpr double convert(const double number, std::string_view unit) {
 }
 
 // Add sizes for the installed packages for older flatpak that doesn't list size for all the packages
-void MainWindow::listSizeInstalledFP() {
+void MainWindow::listSizeInstalledFP() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     auto sizes_list = m_cmd.getCmdOut(QStringLiteral("flatpak list ") + m_user + QStringLiteral("--columns app,size")).split('\n');
@@ -232,7 +250,7 @@ void MainWindow::listSizeInstalledFP() {
 }
 
 // Block interface while updating Flatpak list
-void MainWindow::blockInterfaceFP(bool block) {
+void MainWindow::blockInterfaceFP(bool block) noexcept {
     m_ui->tabWidget->widget(Tab::Flatpak)->setEnabled(!block);
     m_ui->comboRemote->setDisabled(block);
     m_ui->comboFilterFlatpak->setDisabled(block);
@@ -246,7 +264,7 @@ void MainWindow::blockInterfaceFP(bool block) {
 }
 
 // Update interface when done loading info
-void MainWindow::updateInterface() {
+void MainWindow::updateInterface() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
@@ -266,7 +284,7 @@ void MainWindow::updateInterface() {
 }
 
 // add two string "00 KB" and "00 GB", return similar string
-QString MainWindow::addSizes(const QString& arg1, const QString& arg2) {
+QString MainWindow::addSizes(const QString& arg1, const QString& arg2) noexcept {
     const auto& number1 = arg1.simplified().section('.', 0, 0);
     const auto& number2 = arg2.simplified().section('.', 0, 0);
     const auto& unit1   = arg1.simplified().section('.', 1);
@@ -417,7 +435,7 @@ void MainWindow::fetch_net_pkglist() noexcept {
 }
 
 // Process docs
-void MainWindow::processFile(const std::string& group, const std::string& category, const std::vector<std::string>& names) {
+void MainWindow::processFile(const std::string& group, const std::string& category, const std::vector<std::string>& names) noexcept {
     if (names.empty()) {
         return;
     }
@@ -440,7 +458,7 @@ void MainWindow::processFile(const std::string& group, const std::string& catego
 }
 
 // Reload and refresh interface
-void MainWindow::refreshPopularApps() {
+void MainWindow::refreshPopularApps() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     disableOutput();
     m_ui->treePopularApps->clear();
@@ -452,7 +470,7 @@ void MainWindow::refreshPopularApps() {
 }
 
 // In case of duplicates add extra name to disambiguate
-void MainWindow::removeDuplicatesFP() {
+void MainWindow::removeDuplicatesFP() noexcept {
     // find and mark duplicates
     QTreeWidgetItemIterator it(m_ui->treeFlatpak);
     QTreeWidgetItem* prevItem = nullptr;
@@ -484,7 +502,7 @@ void MainWindow::removeDuplicatesFP() {
 }
 
 // Setup progress dialog
-void MainWindow::setProgressDialog() {
+void MainWindow::setProgressDialog() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_progress = new QProgressDialog(this);
     m_bar      = new QProgressBar(m_progress);
@@ -503,7 +521,7 @@ void MainWindow::setProgressDialog() {
     m_progress->reset();
 }
 
-void MainWindow::setSearchFocus() {
+void MainWindow::setSearchFocus() noexcept {
     switch (m_ui->tabWidget->currentIndex()) {
     case Tab::Repo:
         m_ui->searchBoxRepo->setFocus();
@@ -517,7 +535,7 @@ void MainWindow::setSearchFocus() {
 }
 
 // Display Popular Apps in the treePopularApps
-void MainWindow::displayPopularApps() const {
+void MainWindow::displayPopularApps() const noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     QTreeWidgetItem* topLevelItem = nullptr;
     QTreeWidgetItem* childItem    = nullptr;
@@ -606,7 +624,7 @@ void MainWindow::displayPopularApps() const {
 }
 
 // Display only the listed apps (Flatpak only)
-void MainWindow::displayFilteredFP(QStringList list, bool raw) {
+void MainWindow::displayFilteredFP(QStringList list, bool raw) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->treeFlatpak->blockSignals(true);
 
@@ -649,7 +667,7 @@ void MainWindow::displayFilteredFP(QStringList list, bool raw) {
 }
 
 // Display available packages
-void MainWindow::displayPackages() {
+void MainWindow::displayPackages() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     // for m_ui-treeRepo, m_ui->treePopularApps, m_ui->treeFlatpak
@@ -713,7 +731,7 @@ void MainWindow::displayPackages() {
     newtree->blockSignals(false);
 }
 
-void MainWindow::displayFlatpaks(bool force_update) {
+void MainWindow::displayFlatpaks(bool force_update) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     if (m_flatpaks.isEmpty() || force_update) {
@@ -801,7 +819,7 @@ void MainWindow::displayFlatpaks(bool force_update) {
 }
 
 // Display warning
-void MainWindow::displayWarning(const QString& repo) {
+void MainWindow::displayWarning(const QString& repo) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     bool* displayed = nullptr;
@@ -828,14 +846,14 @@ void MainWindow::displayWarning(const QString& repo) {
 }
 
 // If download fails hide progress bar and show first tab
-void MainWindow::ifDownloadFailed() {
+void MainWindow::ifDownloadFailed() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_progress->hide();
     m_ui->tabWidget->setCurrentWidget(m_ui->tabPopular);
 }
 
 // List the flatpak remote and load them into combobox
-void MainWindow::listFlatpakRemotes() {
+void MainWindow::listFlatpakRemotes() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     auto currentRemote = m_ui->comboRemote->currentText();
@@ -850,7 +868,7 @@ void MainWindow::listFlatpakRemotes() {
 }
 
 // Display warning
-bool MainWindow::confirmActions(const QString& names, std::string_view action, bool& is_ok) {
+bool MainWindow::confirmActions(const QString& names, std::string_view action, bool& is_ok) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     std::vector<std::string> change_list(static_cast<std::size_t>(m_change_list.size()));
@@ -871,11 +889,11 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
     } else {
         const char delim      = (names.contains('\n')) ? '\n' : ' ';
         const auto& name_list = ::utils::make_multiline(names.toStdString(), delim);
+
+        is_ok = true;
         if (action == "install") {
-            is_ok = true;
             alpm::add_targets_to_install(m_handle, name_list);
         } else {
-            is_ok = true;
             alpm::add_targets_to_remove(m_handle, name_list);
         }
         detailed_names = alpm::display_targets(m_handle, true, summary).c_str();
@@ -913,18 +931,18 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
             detailed_removed_names = detailed_names;
         }
         if (!detailed_removed_names.isEmpty()) {
-            detailed_removed_names.prepend(tr("Remove") + "\n");
+            detailed_removed_names.prepend(tr("Remove") + '\n');
         }
         if (!detailed_to_install.isEmpty()) {
-            detailed_to_install.prepend(tr("Install") + "\n");
+            detailed_to_install.prepend(tr("Install") + '\n');
         }
     } else {
         if (action == "remove") {
-            detailed_removed_names = m_change_list.join("\n");
+            detailed_removed_names = m_change_list.join('\n');
             detailed_to_install.clear();
         }
         if (action == "install") {
-            detailed_to_install = m_change_list.join("\n");
+            detailed_to_install = m_change_list.join('\n');
             detailed_removed_names.clear();
         }
     }
@@ -952,7 +970,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
 }
 
 // Install the list of apps
-bool MainWindow::install(const QString& names) {
+bool MainWindow::install(const QString& names) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     m_ui->tabWidget->setTabText(m_ui->tabWidget->indexOf(m_ui->tabOutput), tr("Installing packages..."));
@@ -971,7 +989,7 @@ bool MainWindow::install(const QString& names) {
 }
 
 // install a list of application and run postprocess for each of them.
-bool MainWindow::installBatch(const QStringList& name_list) {
+bool MainWindow::installBatch(const QStringList& name_list) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     QString install_names;
     bool result = true;
@@ -994,7 +1012,7 @@ bool MainWindow::installBatch(const QStringList& name_list) {
 }
 
 // install named app
-bool MainWindow::installPopularApp(const QString& name) {
+bool MainWindow::installPopularApp(const QString& name) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     bool result = true;
     QString install_names;
@@ -1016,7 +1034,7 @@ bool MainWindow::installPopularApp(const QString& name) {
 }
 
 // Process checked items to install
-bool MainWindow::installPopularApps() {
+bool MainWindow::installPopularApps() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     QStringList batch_names;
@@ -1051,7 +1069,7 @@ bool MainWindow::installPopularApps() {
 }
 
 // Install selected items
-bool MainWindow::installSelected() {
+bool MainWindow::installSelected() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->setTabEnabled(m_ui->tabWidget->indexOf(m_ui->tabOutput), true);
 
@@ -1062,7 +1080,7 @@ bool MainWindow::installSelected() {
 }
 
 // check if the name is filtered (lib, dev, dbg, etc.)
-bool MainWindow::isFilteredName(const QString& name) {
+bool MainWindow::isFilteredName(const QString& name) noexcept {
     return ((name.startsWith(QLatin1String("lib")) && !name.startsWith(QLatin1String("libreoffice")))
         || name.endsWith(QLatin1String("-dev")) || name.endsWith(QLatin1String("-dbg")) || name.endsWith(QLatin1String("-dbgsym"))
         || name.endsWith(QLatin1String("-debug"))
@@ -1070,7 +1088,7 @@ bool MainWindow::isFilteredName(const QString& name) {
 }
 
 // Build the list of available packages from various source
-bool MainWindow::buildPackageLists(bool force_download) {
+bool MainWindow::buildPackageLists(bool force_download) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     clearUi();
     if (!downloadPackageList(force_download)) {
@@ -1082,7 +1100,7 @@ bool MainWindow::buildPackageLists(bool force_download) {
 }
 
 // Download the Packages.gz from sources
-bool MainWindow::downloadPackageList(bool force_download) {
+bool MainWindow::downloadPackageList(bool force_download) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     m_progress->setLabelText(tr("Downloading package info..."));
@@ -1106,19 +1124,19 @@ bool MainWindow::downloadPackageList(bool force_download) {
     return true;
 }
 
-void MainWindow::enableTabs(bool enable) {
+void MainWindow::enableTabs(bool enable) noexcept {
     for (int tab = 0; tab < m_ui->tabWidget->count() - 1; ++tab) {  // enable all except last (Console)
         m_ui->tabWidget->setTabEnabled(tab, enable);
     }
 }
 
 // Cancel download
-void MainWindow::cancelDownload() {
+void MainWindow::cancelDownload() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_cmd.terminate();
 }
 
-void MainWindow::centerWindow() {
+void MainWindow::centerWindow() noexcept {
     const auto screenGeometry = qApp->screens().first()->geometry();
     const auto x              = (screenGeometry.width() - this->width()) / 2;
     const auto y              = (screenGeometry.height() - this->height()) / 2;
@@ -1126,7 +1144,7 @@ void MainWindow::centerWindow() {
 }
 
 // Clear UI when building package list
-void MainWindow::clearUi() {
+void MainWindow::clearUi() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     blockSignals(true);
@@ -1163,7 +1181,7 @@ auto MainWindow::get_package_version(std::string_view name) noexcept -> std::str
 }
 
 // Return true if all the packages listed are installed
-bool MainWindow::checkInstalled(const QString& names) const {
+bool MainWindow::checkInstalled(const QString& names) const noexcept {
     if (names.isEmpty()) {
         return false;
     }
@@ -1172,7 +1190,7 @@ bool MainWindow::checkInstalled(const QString& names) const {
 }
 
 // Return true if all the packages in the list are installed
-bool MainWindow::checkInstalled(const QStringList& name_list) const {
+bool MainWindow::checkInstalled(const QStringList& name_list) const noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     if (name_list.isEmpty()) {
         return false;
@@ -1182,7 +1200,7 @@ bool MainWindow::checkInstalled(const QStringList& name_list) const {
 }
 
 // return true if all the items in the list are upgradable
-bool MainWindow::checkUpgradable(const QStringList& name_list) const {
+bool MainWindow::checkUpgradable(const QStringList& name_list) const noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     if (name_list.isEmpty()) {
         return false;
@@ -1195,7 +1213,7 @@ bool MainWindow::checkUpgradable(const QStringList& name_list) const {
 }
 
 // Returns list of all installed packages
-QStringList MainWindow::listInstalled() {
+QStringList MainWindow::listInstalled() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     disconnect(m_conn);
     const auto& installed_list = m_cmd.getCmdOut("pacman -Qq").split('\n');
@@ -1204,7 +1222,7 @@ QStringList MainWindow::listInstalled() {
 }
 
 // Return list flatpaks from current remote
-QStringList MainWindow::listFlatpaks(const QString& remote, const QString& type) {
+QStringList MainWindow::listFlatpaks(const QString& remote, const QString& type) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     static bool updated = false;
 
@@ -1264,7 +1282,7 @@ QStringList MainWindow::listInstalledFlatpaks(const std::string_view& type) {
 }
 
 // return the visible tree
-void MainWindow::setCurrentTree() {
+void MainWindow::setCurrentTree() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     const QList list({m_ui->treePopularApps, m_ui->treeRepo, m_ui->treeFlatpak});
 
@@ -1354,9 +1372,9 @@ void MainWindow::displayPackageInfo(const QTreeWidgetItem* item) {
     auto msg_list     = msg.split('\n');
     auto max_no_lines = 20;                // cut message after these many lines
     if (msg_list.size() > max_no_lines) {  // split msg into details if too large
-        msg         = msg_list.mid(0, max_no_lines).join("\n");
+        msg         = msg_list.mid(0, max_no_lines).join('\n');
         detail_list = msg_list.mid(max_no_lines, msg_list.length()) + QStringList{""} + detail_list;
-        details     = detail_list.join("\n");
+        details     = detail_list.join('\n');
     }
     msg += "\n\n" + detail_list.at(detail_list.size() - 2);  // add info about space needed/freed
 
@@ -1457,7 +1475,7 @@ void MainWindow::showOutput() {
 }
 
 // Install button clicked
-void MainWindow::on_pushInstall_clicked() {
+void MainWindow::on_push_install() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     // qDebug() << "change list"  << .join(' ');
     showOutput();
@@ -1492,7 +1510,7 @@ void MainWindow::on_pushInstall_clicked() {
         setCursor(QCursor(Qt::BusyCursor));
         displayOutput();
         if (m_cmd.run("socat SYSTEM:'flatpak install -y " + m_user
-                + m_ui->comboRemote->currentText() + " " + m_change_list.join(' ') + "',stderr STDIO")) {
+                + m_ui->comboRemote->currentText() + ' ' + m_change_list.join(' ') + "',stderr STDIO")) {
             displayFlatpaks(true);
             m_indexFilterFP.clear();
             m_ui->comboFilterFlatpak->setCurrentIndex(0);
@@ -1517,39 +1535,35 @@ void MainWindow::on_pushInstall_clicked() {
 }
 
 // About button clicked
-void MainWindow::on_pushAbout_clicked() {
+void MainWindow::on_push_about() noexcept {
     const auto& msgbox_title = tr("About %1").arg(this->windowTitle());
     const auto& msgbox_body  = "<p align=\"center\"><b><h2>" + this->windowTitle() + "</h2></b></p><p align=\"center\">" + tr("Version: ") + VERSION + "</p><p align=\"center\"><h3>" + tr("Package Installer for CachyOS") + R"(</h3></p><p align="center"><a href="http://cachyos.org">http://cachyos.org</a><br /></p><p align="center">)" + tr("Copyright (c) CachyOS") + "<br /><br /></p>";
     about::display_about_msgbox(msgbox_title, msgbox_body,
         QStringLiteral("file:///usr/share/doc/cachyos-packageinstaller/license.html"));
 }
-// Help button clicked
-void MainWindow::on_pushHelp_clicked() {
-    about::display_doc(QStringLiteral("file:///usr/share/doc/cachyos-packageinstaller/cachyos-pi.html"));
-}
 
 // Resize columns when expanding
-void MainWindow::on_treePopularApps_expanded() {
+void MainWindow::on_treePopularApps_expanded() noexcept {
     m_ui->treePopularApps->resizeColumnToContents(PopCol::Name);
     m_ui->treePopularApps->resizeColumnToContents(PopCol::Description);
 }
 
 // Tree item expanded
-void MainWindow::on_treePopularApps_itemExpanded(QTreeWidgetItem* item) {
+void MainWindow::on_treePopularApps_itemExpanded(QTreeWidgetItem* item) noexcept {
     item->setIcon(PopCol::Icon, QIcon::fromTheme("folder-open"));
     m_ui->treePopularApps->resizeColumnToContents(PopCol::Name);
     m_ui->treePopularApps->resizeColumnToContents(PopCol::Description);
 }
 
 // Tree item collapsed
-void MainWindow::on_treePopularApps_itemCollapsed(QTreeWidgetItem* item) {
+void MainWindow::on_treePopularApps_itemCollapsed(QTreeWidgetItem* item) noexcept {
     item->setIcon(PopCol::Icon, QIcon::fromTheme("folder"));
     m_ui->treePopularApps->resizeColumnToContents(PopCol::Name);
     m_ui->treePopularApps->resizeColumnToContents(PopCol::Description);
 }
 
 // Uninstall clicked
-void MainWindow::on_pushUninstall_clicked() {
+void MainWindow::on_push_uninstall() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     showOutput();
@@ -1624,7 +1638,7 @@ void MainWindow::on_pushUninstall_clicked() {
 }
 
 // Actions on switching the tabs
-void MainWindow::on_tabWidget_currentChanged(int index) {
+void MainWindow::on_tabWidget_currentChanged(int index) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->setTabText(m_ui->tabWidget->indexOf(m_ui->tabOutput), tr("Console Output"));
     m_ui->pushInstall->setEnabled(false);
@@ -1833,14 +1847,14 @@ void MainWindow::filterChanged(const QString& arg1) {
 }
 
 // When selecting on item in the list
-void MainWindow::on_treeRepo_itemChanged(QTreeWidgetItem* item) {
+void MainWindow::on_treeRepo_itemChanged(QTreeWidgetItem* item) noexcept {
     if (item->checkState(TreeCol::Check) == Qt::Checked) {
         m_ui->treeRepo->setCurrentItem(item);
     }
     buildChangeList(item);
 }
 
-void MainWindow::on_treeFlatpak_itemChanged(QTreeWidgetItem* item) {
+void MainWindow::on_treeFlatpak_itemChanged(QTreeWidgetItem* item) noexcept {
     if (item->checkState(FlatCol::Check) == Qt::Checked) {
         m_ui->treeFlatpak->setCurrentItem(item);
     }
@@ -1848,7 +1862,7 @@ void MainWindow::on_treeFlatpak_itemChanged(QTreeWidgetItem* item) {
 }
 
 // Build the change_list when selecting on item in the tree
-void MainWindow::buildChangeList(QTreeWidgetItem* item) {
+void MainWindow::buildChangeList(QTreeWidgetItem* item) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     /* if all apps are uninstalled (or some installed) -> enable Install, disable Uinstall
      * if all apps are installed or upgradable -> enable Uninstall, enable Install
@@ -1906,7 +1920,7 @@ void MainWindow::buildChangeList(QTreeWidgetItem* item) {
 }
 
 // Force repo upgrade
-void MainWindow::on_pushForceUpdateRepo_clicked() {
+void MainWindow::on_push_force_update_repo() noexcept {
     m_ui->searchBoxRepo->clear();
     m_ui->comboFilterRepo->setCurrentIndex(0);
     alpm::refresh_alpm(&m_handle, m_alpm_err);
@@ -1914,7 +1928,7 @@ void MainWindow::on_pushForceUpdateRepo_clicked() {
 }
 
 // Hide/unhide lib/-dev packages
-void MainWindow::on_checkHideLibs_toggled(bool checked) {
+void MainWindow::on_checkHideLibs_toggled(bool checked) noexcept {
     for (QTreeWidgetItemIterator it(m_ui->treeRepo); *it; ++it) {
         (*it)->setHidden(isFilteredName((*it)->text(TreeCol::Name)) && checked);
     }
@@ -1922,7 +1936,7 @@ void MainWindow::on_checkHideLibs_toggled(bool checked) {
 }
 
 // Upgrade all packages (from Stable repo only)
-void MainWindow::on_pushUpgradeAll_clicked() {
+void MainWindow::on_push_upgrade_all() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     showOutput();
 
@@ -1947,12 +1961,12 @@ void MainWindow::on_pushUpgradeAll_clicked() {
 }
 
 // Pressing Enter or buttonEnter should do the same thing
-void MainWindow::on_pushEnter_clicked() {
+void MainWindow::on_push_enter() noexcept {
     on_lineEdit_returnPressed();
 }
 
 // Send the response to terminal process
-void MainWindow::on_lineEdit_returnPressed() {
+void MainWindow::on_lineEdit_returnPressed() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_cmd.write(m_ui->lineEdit->text().toUtf8() + "\n");
     m_ui->outputBox->appendPlainText(m_ui->lineEdit->text() + "\n");
@@ -1960,7 +1974,7 @@ void MainWindow::on_lineEdit_returnPressed() {
     m_ui->lineEdit->setFocus();
 }
 
-void MainWindow::on_pushCancel_clicked() {
+void MainWindow::on_push_cancel() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     if (m_cmd.state() != QProcess::NotRunning) {
         if (QMessageBox::warning(this, tr("Quit?"),
@@ -1975,12 +1989,12 @@ void MainWindow::on_pushCancel_clicked() {
 }
 
 // on change flatpack remote
-void MainWindow::on_comboRemote_activated(int) {
+void MainWindow::on_comboRemote_activated(int) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     displayFlatpaks(true);
 }
 
-void MainWindow::on_pushUpgradeFP_clicked() {
+void MainWindow::on_push_upgrade_flatpak() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     showOutput();
     setCursor(QCursor(Qt::BusyCursor));
@@ -1999,7 +2013,7 @@ void MainWindow::on_pushUpgradeFP_clicked() {
     enableTabs(true);
 }
 
-void MainWindow::on_pushRemotes_clicked() {
+void MainWindow::on_push_remotes() noexcept {
     auto* dialog = new ManageRemotes(this);
     dialog->exec();
     if (dialog->isChanged()) {
@@ -2026,7 +2040,7 @@ void MainWindow::on_pushRemotes_clicked() {
     }
 }
 
-void MainWindow::on_comboUser_activated(int index) {
+void MainWindow::on_comboUser_activated(int index) noexcept {
     static bool updated = false;
     if (index == 0) {
         m_user = "--system ";
@@ -2049,7 +2063,7 @@ void MainWindow::on_comboUser_activated(int index) {
     displayFlatpaks(true);
 }
 
-void MainWindow::on_treePopularApps_customContextMenuRequested(const QPoint& pos) {
+void MainWindow::on_treePopularApps_customContextMenuRequested(const QPoint& pos) noexcept {
     auto* t_widget = qobject_cast<QTreeWidget*>(focusWidget());
     if (t_widget->currentItem()->childCount() > 0) {
         return;
@@ -2062,7 +2076,7 @@ void MainWindow::on_treePopularApps_customContextMenuRequested(const QPoint& pos
     action->deleteLater();
 }
 
-void MainWindow::on_treeRepo_customContextMenuRequested(const QPoint& pos) {
+void MainWindow::on_treeRepo_customContextMenuRequested(const QPoint& pos) noexcept {
     auto* t_widget = qobject_cast<QTreeWidget*>(focusWidget());
     auto* action   = new QAction(QIcon::fromTheme("dialog-information"), tr("More &info..."), this);
     QMenu menu(this);
@@ -2075,11 +2089,11 @@ void MainWindow::on_treeRepo_customContextMenuRequested(const QPoint& pos) {
 // process keystrokes
 void MainWindow::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
-        on_pushCancel_clicked();
+        this->on_push_cancel();
     }
 }
 
-void MainWindow::on_treePopularApps_itemChanged(QTreeWidgetItem* item) {
+void MainWindow::on_treePopularApps_itemChanged(QTreeWidgetItem* item) noexcept {
     if (item->checkState(1) == Qt::Checked) {
         m_ui->treePopularApps->setCurrentItem(item);
     }
@@ -2103,7 +2117,7 @@ void MainWindow::on_treePopularApps_itemChanged(QTreeWidgetItem* item) {
     }
 }
 
-void MainWindow::on_pushRemoveUnused_clicked() {
+void MainWindow::on_push_remove_unused() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     showOutput();
     setCursor(QCursor(Qt::BusyCursor));
@@ -2122,7 +2136,7 @@ void MainWindow::on_pushRemoveUnused_clicked() {
     enableTabs(true);
 }
 
-void MainWindow::on_pushRemoveOrphan_clicked() {
+void MainWindow::on_push_remove_orphan() noexcept {
     const auto names = m_cmd.getCmdOut("pacman -Qdtq | tr '\\n' ' '");
     QMessageBox::warning(this, tr("Warning"), tr("Potentially dangerous operation.\nPlease make sure you check carefully the list of packages to be removed."));
     showOutput();

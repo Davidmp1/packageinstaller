@@ -108,49 +108,63 @@ class MainWindow : public QDialog {
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() override;
 
-    bool buildPackageLists(bool force_download = false);
-    [[nodiscard]] bool checkInstalled(const QString& names) const;
-    [[nodiscard]] bool checkInstalled(const QStringList& name_list) const;
-    [[nodiscard]] bool checkUpgradable(const QStringList& name_list) const;
-    bool confirmActions(const QString& names, std::string_view action, bool& is_ok);
-    bool downloadPackageList(bool force_download = false);
-    bool install(const QString& names);
-    bool installBatch(const QStringList& name_list);
-    bool installPopularApp(const QString& name);
-    bool installPopularApps();
-    bool installSelected();
-    [[nodiscard]] static bool isFilteredName(const QString& name);
-    bool uninstall(const QString& names);
+    auto buildPackageLists(bool force_download = false) noexcept -> bool;
+    [[nodiscard]] auto checkInstalled(const QString& names) const noexcept -> bool;
+    [[nodiscard]] auto checkInstalled(const QStringList& name_list) const noexcept -> bool;
+    [[nodiscard]] auto checkUpgradable(const QStringList& name_list) const noexcept -> bool;
+    auto confirmActions(const QString& names, std::string_view action, bool& is_ok) noexcept -> bool;
+    auto downloadPackageList(bool force_download = false) noexcept -> bool;
+    auto install(const QString& names) noexcept -> bool;
+    auto installBatch(const QStringList& name_list) noexcept -> bool;
+    auto installPopularApp(const QString& name) noexcept -> bool;
+    auto installPopularApps() noexcept -> bool;
+    auto installSelected() noexcept -> bool;
+    [[nodiscard]] static auto isFilteredName(const QString& name) noexcept -> bool;
+    bool uninstall(const QString& names) noexcept;
 
-    void blockInterfaceFP(bool block);
-    void buildChangeList(QTreeWidgetItem* item);
-    void cancelDownload();
-    void centerWindow();
-    void clearUi();
-    void displayFilteredFP(QStringList list, bool raw = false);
-    void displayFlatpaks(bool force_update = false);
-    void displayPackages();
-    void displayPopularApps() const;
-    void displayWarning(const QString& repo);
-    void enableTabs(bool enable);
-    void ifDownloadFailed();
-    void listFlatpakRemotes();
-    void listSizeInstalledFP();
+    void blockInterfaceFP(bool block) noexcept;
+    void buildChangeList(QTreeWidgetItem* item) noexcept;
+    void cancelDownload() noexcept;
+    void centerWindow() noexcept;
+    void clearUi() noexcept;
+    void displayFilteredFP(QStringList list, bool raw = false) noexcept;
+    void displayFlatpaks(bool force_update = false) noexcept;
+    void displayPackages() noexcept;
+    void displayPopularApps() const noexcept;
+    void displayWarning(const QString& repo) noexcept;
+    void enableTabs(bool enable) noexcept;
+    void ifDownloadFailed() noexcept;
+    void listFlatpakRemotes() noexcept;
+    void listSizeInstalledFP() noexcept;
     void fetch_net_pkglist() noexcept;
-    void processFile(const std::string& group, const std::string& category, const std::vector<std::string>& names);
-    void refreshPopularApps();
-    void removeDuplicatesFP();
-    void setCurrentTree();
-    void setProgressDialog();
-    void setSearchFocus();
-    void setup();
-    void updateInterface();
+    void processFile(const std::string& group, const std::string& category, const std::vector<std::string>& names) noexcept;
+    void refreshPopularApps() noexcept;
+    void removeDuplicatesFP() noexcept;
+    void setCurrentTree() noexcept;
+    void setProgressDialog() noexcept;
+    void setSearchFocus() noexcept;
+    void setup() noexcept;
+    void updateInterface() noexcept;
 
-    static QString addSizes(const QString& arg1, const QString& arg2);
+    void on_push_about() noexcept;
+    void on_push_install() noexcept;
+    void on_push_uninstall() noexcept;
+
+    void on_push_remove_unused() noexcept;
+    void on_push_remove_orphan() noexcept;
+
+    void on_push_force_update_repo() noexcept;
+    void on_push_cancel() noexcept;
+    void on_push_enter() noexcept;
+    void on_push_upgrade_all() noexcept;
+    void on_push_remotes() noexcept;
+    void on_push_upgrade_flatpak() noexcept;
+
+    static auto addSizes(const QString& arg1, const QString& arg2) noexcept -> QString;
     auto get_package_version(std::string_view name) noexcept -> std::string;
-    QStringList listFlatpaks(const QString& remote, const QString& type = "");
-    QStringList listInstalled();
-    QStringList listInstalledFlatpaks(const std::string_view& type = "");
+    auto listFlatpaks(const QString& remote, const QString& type = "") noexcept -> QStringList;
+    auto listInstalled() noexcept -> QStringList;
+    auto listInstalledFlatpaks(const std::string_view& type = "") -> QStringList;
 
     QString m_version{};
 
@@ -174,39 +188,25 @@ class MainWindow : public QDialog {
     void showOutput();
     void updateBar();
 
-    void on_pushAbout_clicked();
-    static void on_pushHelp_clicked();
-    void on_pushInstall_clicked();
-    void on_pushUninstall_clicked();
-    void on_tabWidget_currentChanged(int index);
-    void on_treePopularApps_expanded();
-    void on_treePopularApps_itemCollapsed(QTreeWidgetItem* item);
-    void on_treePopularApps_itemExpanded(QTreeWidgetItem* item);
+    void on_tabWidget_currentChanged(int index) noexcept;
 
-    void on_treeFlatpak_itemChanged(QTreeWidgetItem* item);
-    void on_treePopularApps_itemChanged(QTreeWidgetItem* item);
-    void on_treeRepo_itemChanged(QTreeWidgetItem* item);
+    void on_treePopularApps_expanded() noexcept;
 
-    void on_pushForceUpdateRepo_clicked();
+    void on_checkHideLibs_toggled(bool checked) noexcept;
+    void on_lineEdit_returnPressed() noexcept;
 
-    void on_checkHideLibs_toggled(bool checked);
+    void on_comboRemote_activated(int) noexcept;
+    void on_comboUser_activated(int index) noexcept;
 
-    void on_lineEdit_returnPressed();
-    void on_pushCancel_clicked();
-    void on_pushEnter_clicked();
-    void on_pushUpgradeAll_clicked();
+    void on_treePopularApps_itemCollapsed(QTreeWidgetItem* item) noexcept;
+    void on_treePopularApps_itemExpanded(QTreeWidgetItem* item) noexcept;
+    void on_treePopularApps_itemChanged(QTreeWidgetItem* item) noexcept;
 
-    void on_comboRemote_activated(int);
-    void on_comboUser_activated(int index);
-    void on_pushRemotes_clicked();
-    void on_pushUpgradeFP_clicked();
+    void on_treeFlatpak_itemChanged(QTreeWidgetItem* item) noexcept;
+    void on_treeRepo_itemChanged(QTreeWidgetItem* item) noexcept;
 
-    void on_treePopularApps_customContextMenuRequested(const QPoint& pos);
-    void on_treeRepo_customContextMenuRequested(const QPoint& pos);
-
-    void on_pushRemoveUnused_clicked();
-
-    void on_pushRemoveOrphan_clicked();
+    void on_treePopularApps_customContextMenuRequested(const QPoint& pos) noexcept;
+    void on_treeRepo_customContextMenuRequested(const QPoint& pos) noexcept;
 
  private:
     Ui::MainWindow* m_ui{};
