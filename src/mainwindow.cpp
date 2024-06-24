@@ -14,6 +14,8 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+// NOLINTBEGIN(bugprone-unhandled-exception-at-new)
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wold-style-cast"
@@ -138,6 +140,9 @@ void MainWindow::setup() noexcept {
     // connect combo filters
     connect(m_ui->comboFilterRepo, &QComboBox::currentTextChanged, this, &MainWindow::filterChanged);
     connect(m_ui->comboFilterFlatpak, &QComboBox::currentTextChanged, this, &MainWindow::filterChanged);
+
+    // connect tab widget
+    connect(m_ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::on_current_tab_changed);
 
     m_ui->searchPopular->setFocus();
     m_warning_flatpaks = false;
@@ -906,7 +911,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
     }
 
     if ((m_tree != m_ui->treeFlatpak) && (!is_ok)) {
-        QMessageBox msgBox;
+        QMessageBox msgBox(this);
         msg = "<b>The following packages have conflicts.</b>";
         msgBox.setText(msg);
         msgBox.setInformativeText("\n" + names + "\n\n" + msg_ok_status.c_str());
@@ -949,7 +954,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
 
     msg = "<b>" + tr("The following packages were selected. Click Show Details for list of changes.") + "</b>";
 
-    QMessageBox msgBox;
+    QMessageBox msgBox(this);
     msgBox.setText(msg);
     msgBox.setInformativeText("\n" + names + "\n\n" + summary.c_str());
 
@@ -1347,7 +1352,7 @@ void MainWindow::disableWarning(bool checked) {
 }
 
 // Display info when clicking the "info" icon of the package
-void MainWindow::displayInfo(const QTreeWidgetItem* item, int column) {
+void MainWindow::displayInfo(const QTreeWidgetItem* item, int column) const {
     if (column != PopCol::Info || item->childCount() > 0) {
         return;
     }
@@ -1638,7 +1643,7 @@ void MainWindow::on_push_uninstall() noexcept {
 }
 
 // Actions on switching the tabs
-void MainWindow::on_tabWidget_currentChanged(int index) noexcept {
+void MainWindow::on_current_tab_changed(int index) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->setTabText(m_ui->tabWidget->indexOf(m_ui->tabOutput), tr("Console Output"));
     m_ui->pushInstall->setEnabled(false);
@@ -1699,7 +1704,7 @@ void MainWindow::on_tabWidget_currentChanged(int index) noexcept {
         blockInterfaceFP(true);
 
         if (!checkInstalled("flatpak")) {
-            int const ans = QMessageBox::question(this, tr("Flatpak not installed"), tr("Flatpak is not currently installed.\nOK to go ahead and install it?"));
+            const auto ans = QMessageBox::question(this, tr("Flatpak not installed"), tr("Flatpak is not currently installed.\nOK to go ahead and install it?"));
             if (ans == QMessageBox::No) {
                 m_ui->tabWidget->setCurrentIndex(Tab::Popular);
                 break;
@@ -2071,7 +2076,7 @@ void MainWindow::on_treePopularApps_customContextMenuRequested(const QPoint& pos
     auto* action = new QAction(QIcon::fromTheme("dialog-information"), tr("More &info..."), this);
     QMenu menu(this);
     menu.addAction(action);
-    connect(action, &QAction::triggered, [t_widget] { displayInfo(t_widget->currentItem(), 3); });
+    connect(action, &QAction::triggered, [this, t_widget] { displayInfo(t_widget->currentItem(), 3); });
     menu.exec(m_ui->treePopularApps->mapToGlobal(pos));
     action->deleteLater();
 }
@@ -2156,3 +2161,5 @@ void MainWindow::on_push_remove_orphan() noexcept {
     enableTabs(true);
     m_ui->tabWidget->setCurrentIndex(Tab::Repo);
 }
+
+// NOLINTEND(bugprone-unhandled-exception-at-new)

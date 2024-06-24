@@ -160,6 +160,8 @@ class MainWindow : public QDialog {
     void on_push_remotes() noexcept;
     void on_push_upgrade_flatpak() noexcept;
 
+    void on_current_tab_changed(int index) noexcept;
+
     static auto addSizes(const QString& arg1, const QString& arg2) noexcept -> QString;
     auto get_package_version(std::string_view name) noexcept -> std::string;
     auto listFlatpaks(const QString& remote, const QString& type = "") noexcept -> QStringList;
@@ -178,7 +180,7 @@ class MainWindow : public QDialog {
     void cmdStart();
     void disableOutput();
     void disableWarning(bool checked);
-    static void displayInfo(const QTreeWidgetItem* item, int column);
+    void displayInfo(const QTreeWidgetItem* item, int column) const; // NOLINT
     void displayOutput();
     void displayPackageInfo(const QTreeWidgetItem* item);
     void filterChanged(const QString& arg1);
@@ -187,8 +189,6 @@ class MainWindow : public QDialog {
     void outputAvailable(const QString& output);
     void showOutput();
     void updateBar();
-
-    void on_tabWidget_currentChanged(int index) noexcept;
 
     void on_treePopularApps_expanded() noexcept;
 
