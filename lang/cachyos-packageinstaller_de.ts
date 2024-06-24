@@ -5,7 +5,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="../src/mainwindow.ui" line="20"/>
-        <location filename="../src/mainwindow.cpp" line="89"/>
+        <location filename="../src/mainwindow.cpp" line="91"/>
         <source>CachyOS Package Installer</source>
         <translation>CachyOS-Paket-Installationsprogramm</translation>
     </message>
@@ -16,20 +16,20 @@
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="83"/>
-        <location filename="../src/mainwindow.cpp" line="119"/>
+        <location filename="../src/mainwindow.cpp" line="121"/>
         <source>Package</source>
         <translation>Paket</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="88"/>
-        <location filename="../src/mainwindow.cpp" line="119"/>
+        <location filename="../src/mainwindow.cpp" line="121"/>
         <source>Info</source>
         <translation>Infos</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="93"/>
         <location filename="../src/mainwindow.ui" line="250"/>
-        <location filename="../src/mainwindow.cpp" line="119"/>
+        <location filename="../src/mainwindow.cpp" line="121"/>
         <source>Description</source>
         <translation>Beschreibung</translation>
     </message>
@@ -59,29 +59,29 @@
     <message>
         <location filename="../src/mainwindow.ui" line="177"/>
         <location filename="../src/mainwindow.ui" line="181"/>
-        <location filename="../src/mainwindow.cpp" line="1797"/>
+        <location filename="../src/mainwindow.cpp" line="1818"/>
         <source>All packages</source>
         <translation>Alle Pakete</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="186"/>
-        <location filename="../src/mainwindow.cpp" line="1810"/>
+        <location filename="../src/mainwindow.cpp" line="1831"/>
         <source>Installed</source>
         <translation>Installiert</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="191"/>
-        <location filename="../src/mainwindow.cpp" line="1808"/>
+        <location filename="../src/mainwindow.cpp" line="1829"/>
         <source>Upgradable</source>
         <translation>Ausbaufähig</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="196"/>
         <location filename="../src/mainwindow.ui" line="575"/>
-        <location filename="../src/mainwindow.cpp" line="1781"/>
-        <location filename="../src/mainwindow.cpp" line="1812"/>
-        <location filename="../src/mainwindow.cpp" line="1889"/>
-        <location filename="../src/mainwindow.cpp" line="1890"/>
+        <location filename="../src/mainwindow.cpp" line="1802"/>
+        <location filename="../src/mainwindow.cpp" line="1833"/>
+        <location filename="../src/mainwindow.cpp" line="1910"/>
+        <location filename="../src/mainwindow.cpp" line="1911"/>
         <source>Not installed</source>
         <translation>Nicht installiert</translation>
     </message>
@@ -151,39 +151,39 @@
     <message>
         <location filename="../src/mainwindow.ui" line="541"/>
         <location filename="../src/mainwindow.ui" line="545"/>
-        <location filename="../src/mainwindow.cpp" line="1761"/>
+        <location filename="../src/mainwindow.cpp" line="1782"/>
         <source>All apps</source>
         <translation>Alle Anwendungen</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="550"/>
-        <location filename="../src/mainwindow.cpp" line="1766"/>
+        <location filename="../src/mainwindow.cpp" line="1787"/>
         <source>All runtimes</source>
         <translation>Alle Laufzeiten</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="555"/>
-        <location filename="../src/mainwindow.cpp" line="1771"/>
+        <location filename="../src/mainwindow.cpp" line="1792"/>
         <source>All available</source>
         <translation>Alle verfügbar</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="560"/>
-        <location filename="../src/mainwindow.cpp" line="1759"/>
+        <location filename="../src/mainwindow.cpp" line="1780"/>
         <source>Installed apps</source>
         <translation>Installierte Anwendungen</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="565"/>
-        <location filename="../src/mainwindow.cpp" line="1757"/>
+        <location filename="../src/mainwindow.cpp" line="1778"/>
         <source>Installed runtimes</source>
         <translation>Installierte Laufzeiten</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="570"/>
-        <location filename="../src/mainwindow.cpp" line="1779"/>
-        <location filename="../src/mainwindow.cpp" line="1883"/>
-        <location filename="../src/mainwindow.cpp" line="1884"/>
+        <location filename="../src/mainwindow.cpp" line="1800"/>
+        <location filename="../src/mainwindow.cpp" line="1904"/>
+        <location filename="../src/mainwindow.cpp" line="1905"/>
         <source>All installed</source>
         <translation>Alle installiert</translation>
     </message>
@@ -245,8 +245,8 @@
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="877"/>
-        <location filename="../src/mainwindow.cpp" line="1629"/>
-        <location filename="../src/mainwindow.cpp" line="1719"/>
+        <location filename="../src/mainwindow.cpp" line="1650"/>
+        <location filename="../src/mainwindow.cpp" line="1740"/>
         <source>Console Output</source>
         <translation>Konsolenausgabe</translation>
     </message>
@@ -277,10 +277,10 @@
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="1008"/>
-        <location filename="../src/mainwindow.cpp" line="919"/>
-        <location filename="../src/mainwindow.cpp" line="1879"/>
-        <location filename="../src/mainwindow.cpp" line="1881"/>
-        <location filename="../src/mainwindow.cpp" line="2102"/>
+        <location filename="../src/mainwindow.cpp" line="943"/>
+        <location filename="../src/mainwindow.cpp" line="1900"/>
+        <location filename="../src/mainwindow.cpp" line="1902"/>
+        <location filename="../src/mainwindow.cpp" line="2123"/>
         <source>Install</source>
         <translation>Installieren Sie</translation>
     </message>
@@ -330,7 +330,7 @@
         <translation>Alt+B</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="194"/>
+        <location filename="../src/mainwindow.cpp" line="218"/>
         <source>Uninstalling packages...</source>
         <translation>Pakete deinstallieren...</translation>
     </message>
@@ -339,16 +339,16 @@
         <translation type="vanished">Erfrischende Quellen...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1476"/>
-        <location filename="../src/mainwindow.cpp" line="1503"/>
-        <location filename="../src/mainwindow.cpp" line="1513"/>
-        <location filename="../src/mainwindow.cpp" line="1604"/>
-        <location filename="../src/mainwindow.cpp" line="1621"/>
-        <location filename="../src/mainwindow.cpp" line="1943"/>
-        <location filename="../src/mainwindow.cpp" line="1997"/>
-        <location filename="../src/mainwindow.cpp" line="2023"/>
-        <location filename="../src/mainwindow.cpp" line="2120"/>
-        <location filename="../src/mainwindow.cpp" line="2140"/>
+        <location filename="../src/mainwindow.cpp" line="1501"/>
+        <location filename="../src/mainwindow.cpp" line="1528"/>
+        <location filename="../src/mainwindow.cpp" line="1538"/>
+        <location filename="../src/mainwindow.cpp" line="1625"/>
+        <location filename="../src/mainwindow.cpp" line="1642"/>
+        <location filename="../src/mainwindow.cpp" line="1964"/>
+        <location filename="../src/mainwindow.cpp" line="2018"/>
+        <location filename="../src/mainwindow.cpp" line="2045"/>
+        <location filename="../src/mainwindow.cpp" line="2141"/>
+        <location filename="../src/mainwindow.cpp" line="2161"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
@@ -357,251 +357,251 @@
         <translation type="vanished">Es gab ein Problem bei der Aktualisierung der Quellen. Einige Quellen haben möglicherweise keine Aktualisierungen bereitgestellt. Für weitere Informationen siehe: </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="400"/>
+        <location filename="../src/mainwindow.cpp" line="424"/>
         <source>Unable to fetch pkglist. Timeout!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="492"/>
+        <location filename="../src/mainwindow.cpp" line="516"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="499"/>
+        <location filename="../src/mainwindow.cpp" line="523"/>
         <source>Please wait...</source>
         <translation>Bitte warten Sie...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="685"/>
-        <location filename="../src/mainwindow.cpp" line="702"/>
+        <location filename="../src/mainwindow.cpp" line="709"/>
+        <location filename="../src/mainwindow.cpp" line="726"/>
         <source>Version </source>
         <translation>Version </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="685"/>
+        <location filename="../src/mainwindow.cpp" line="709"/>
         <source> in repo</source>
         <translation> im Endlager</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="687"/>
+        <location filename="../src/mainwindow.cpp" line="711"/>
         <source>Not available in repo</source>
         <translation>Im Repository nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="696"/>
+        <location filename="../src/mainwindow.cpp" line="720"/>
         <source>Latest version </source>
         <translation>Letzte Version </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="696"/>
+        <location filename="../src/mainwindow.cpp" line="720"/>
         <source> already installed</source>
         <translation> bereits installiert</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="702"/>
+        <location filename="../src/mainwindow.cpp" line="726"/>
         <source> installed</source>
         <translation> installiert</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="812"/>
+        <location filename="../src/mainwindow.cpp" line="836"/>
         <source>CachyOS includes this repository of flatpaks for the users&apos; convenience only, and is not responsible for the functionality of the individual flatpaks themselves. For more, consult flatpaks in the Wiki.</source>
         <translation>CachyOS stellt diese Sammlung von Flatpaks nur für die Bequemlichkeit der Benutzer zur Verfügung und ist nicht verantwortlich für die Funktionalität der einzelnen Flatpaks selbst. Weitere Informationen finden Sie unter flatpaks im Wiki.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="820"/>
-        <location filename="../src/mainwindow.cpp" line="2127"/>
+        <location filename="../src/mainwindow.cpp" line="844"/>
+        <location filename="../src/mainwindow.cpp" line="2148"/>
         <source>Warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="824"/>
+        <location filename="../src/mainwindow.cpp" line="848"/>
         <source>Do not show this message again</source>
         <translation>Diese Meldung nicht mehr anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="916"/>
+        <location filename="../src/mainwindow.cpp" line="940"/>
         <source>Remove</source>
         <translation>entfernen</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="932"/>
+        <location filename="../src/mainwindow.cpp" line="956"/>
         <source>The following packages were selected. Click Show Details for list of changes.</source>
         <translation>Die folgenden Pakete wurden ausgewählt. Klicken Sie auf Details anzeigen, um eine Liste der Änderungen anzuzeigen.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="958"/>
+        <location filename="../src/mainwindow.cpp" line="982"/>
         <source>Installing packages...</source>
         <translation>Installieren von Paketen...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1011"/>
+        <location filename="../src/mainwindow.cpp" line="1035"/>
         <source>Installing </source>
         <translation>Installation von </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1088"/>
+        <location filename="../src/mainwindow.cpp" line="1112"/>
         <source>Downloading package info...</source>
         <translation>Herunterladen von Paketinformationen...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1342"/>
+        <location filename="../src/mainwindow.cpp" line="1367"/>
         <source>Packages to be installed: </source>
         <translation>Zu installierende Pakete: </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1344"/>
-        <location filename="../src/mainwindow.cpp" line="1363"/>
+        <location filename="../src/mainwindow.cpp" line="1369"/>
+        <location filename="../src/mainwindow.cpp" line="1388"/>
         <source>Package info</source>
         <translation>Paket-Infos</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1472"/>
-        <location filename="../src/mainwindow.cpp" line="1485"/>
-        <location filename="../src/mainwindow.cpp" line="1499"/>
+        <location filename="../src/mainwindow.cpp" line="1497"/>
         <location filename="../src/mainwindow.cpp" line="1510"/>
-        <location filename="../src/mainwindow.cpp" line="1580"/>
+        <location filename="../src/mainwindow.cpp" line="1524"/>
+        <location filename="../src/mainwindow.cpp" line="1535"/>
         <location filename="../src/mainwindow.cpp" line="1601"/>
-        <location filename="../src/mainwindow.cpp" line="1940"/>
-        <location filename="../src/mainwindow.cpp" line="1991"/>
-        <location filename="../src/mainwindow.cpp" line="2017"/>
-        <location filename="../src/mainwindow.cpp" line="2116"/>
+        <location filename="../src/mainwindow.cpp" line="1622"/>
+        <location filename="../src/mainwindow.cpp" line="1961"/>
+        <location filename="../src/mainwindow.cpp" line="2012"/>
+        <location filename="../src/mainwindow.cpp" line="2039"/>
+        <location filename="../src/mainwindow.cpp" line="2137"/>
         <source>Done</source>
         <translation>Erledigt</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1472"/>
-        <location filename="../src/mainwindow.cpp" line="1485"/>
-        <location filename="../src/mainwindow.cpp" line="1499"/>
+        <location filename="../src/mainwindow.cpp" line="1497"/>
         <location filename="../src/mainwindow.cpp" line="1510"/>
-        <location filename="../src/mainwindow.cpp" line="1580"/>
+        <location filename="../src/mainwindow.cpp" line="1524"/>
+        <location filename="../src/mainwindow.cpp" line="1535"/>
         <location filename="../src/mainwindow.cpp" line="1601"/>
-        <location filename="../src/mainwindow.cpp" line="1618"/>
-        <location filename="../src/mainwindow.cpp" line="1940"/>
-        <location filename="../src/mainwindow.cpp" line="1991"/>
-        <location filename="../src/mainwindow.cpp" line="2017"/>
-        <location filename="../src/mainwindow.cpp" line="2116"/>
+        <location filename="../src/mainwindow.cpp" line="1622"/>
+        <location filename="../src/mainwindow.cpp" line="1639"/>
+        <location filename="../src/mainwindow.cpp" line="1961"/>
+        <location filename="../src/mainwindow.cpp" line="2012"/>
+        <location filename="../src/mainwindow.cpp" line="2039"/>
         <location filename="../src/mainwindow.cpp" line="2137"/>
+        <location filename="../src/mainwindow.cpp" line="2158"/>
         <source>Processing finished successfully.</source>
         <translation>Die Verarbeitung wurde erfolgreich abgeschlossen.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1476"/>
-        <location filename="../src/mainwindow.cpp" line="1503"/>
-        <location filename="../src/mainwindow.cpp" line="1513"/>
-        <location filename="../src/mainwindow.cpp" line="1943"/>
-        <location filename="../src/mainwindow.cpp" line="1997"/>
-        <location filename="../src/mainwindow.cpp" line="2023"/>
+        <location filename="../src/mainwindow.cpp" line="1501"/>
+        <location filename="../src/mainwindow.cpp" line="1528"/>
+        <location filename="../src/mainwindow.cpp" line="1538"/>
+        <location filename="../src/mainwindow.cpp" line="1964"/>
+        <location filename="../src/mainwindow.cpp" line="2018"/>
+        <location filename="../src/mainwindow.cpp" line="2045"/>
         <source>Problem detected while installing, please inspect the console output.</source>
         <translation>Während der Installation wurde ein Problem festgestellt, bitte prüfen Sie die Konsolenausgabe.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1521"/>
+        <location filename="../src/mainwindow.cpp" line="1546"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1522"/>
+        <location filename="../src/mainwindow.cpp" line="1547"/>
         <source>Version: </source>
         <translation>Version: </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1522"/>
+        <location filename="../src/mainwindow.cpp" line="1547"/>
         <source>Package Installer for CachyOS</source>
         <translation>Paket-Installationsprogramm für CachyOS</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1522"/>
+        <location filename="../src/mainwindow.cpp" line="1547"/>
         <source>Copyright (c) CachyOS</source>
         <translation>Copyright (c) CachyOS</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1604"/>
+        <location filename="../src/mainwindow.cpp" line="1625"/>
         <source>We encountered a problem uninstalling, please check output</source>
         <translation>Bei der Deinstallation ist ein Problem aufgetreten, bitte überprüfen Sie die Ausgabe</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1618"/>
-        <location filename="../src/mainwindow.cpp" line="2137"/>
+        <location filename="../src/mainwindow.cpp" line="1639"/>
+        <location filename="../src/mainwindow.cpp" line="2158"/>
         <source>Success</source>
         <translation>Erfolg</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1621"/>
-        <location filename="../src/mainwindow.cpp" line="2140"/>
+        <location filename="../src/mainwindow.cpp" line="1642"/>
+        <location filename="../src/mainwindow.cpp" line="2161"/>
         <source>We encountered a problem uninstalling the program</source>
         <translation>Bei der Deinstallation des Programms ist ein Problem aufgetreten</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1688"/>
-        <location filename="../src/mainwindow.cpp" line="1701"/>
+        <location filename="../src/mainwindow.cpp" line="1709"/>
+        <location filename="../src/mainwindow.cpp" line="1722"/>
         <source>Flatpak not installed</source>
         <translation>Flatpak nicht installiert</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1688"/>
+        <location filename="../src/mainwindow.cpp" line="1709"/>
         <source>Flatpak is not currently installed.
 OK to go ahead and install it?</source>
         <translation>Flatpak ist derzeit nicht installiert.
 Ist es in Ordnung, es zu installieren?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1701"/>
+        <location filename="../src/mainwindow.cpp" line="1722"/>
         <source>Flatpak was not installed</source>
         <translation>Flatpak wurde nicht installiert</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1710"/>
+        <location filename="../src/mainwindow.cpp" line="1731"/>
         <source>Flathub remote failed</source>
         <translation>Flathub remote fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1710"/>
+        <location filename="../src/mainwindow.cpp" line="1731"/>
         <source>Flathub remote could not be added</source>
         <translation>Flathub-Fernbedienung konnte nicht hinzugefügt werden</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1723"/>
+        <location filename="../src/mainwindow.cpp" line="1744"/>
         <source>Needs re-login</source>
         <translation>Benötigt erneute Anmeldung</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1723"/>
+        <location filename="../src/mainwindow.cpp" line="1744"/>
         <source>You might need to logout/login to see installed items in the menu</source>
         <translation>Möglicherweise müssen Sie sich abmelden/anmelden, um die installierten Elemente im Menü zu sehen</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1879"/>
+        <location filename="../src/mainwindow.cpp" line="1900"/>
         <source>Upgrade</source>
         <translation>Upgrade</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1966"/>
+        <location filename="../src/mainwindow.cpp" line="1987"/>
         <source>Quit?</source>
         <translation>Kündigen?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1967"/>
+        <location filename="../src/mainwindow.cpp" line="1988"/>
         <source>Process still running, quitting might leave the system in an unstable state.&lt;p&gt;&lt;b&gt;Are you sure you want to exit CachyOS Package Installer?&lt;/b&gt;</source>
         <translation>Da der Prozess noch läuft, kann das Beenden das System in einen instabilen Zustand versetzen.&lt;p&gt;&lt;b&gt;Sind Sie sicher, dass Sie den CachyOS Package Installer beenden wollen?&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2057"/>
-        <location filename="../src/mainwindow.cpp" line="2067"/>
+        <location filename="../src/mainwindow.cpp" line="2078"/>
+        <location filename="../src/mainwindow.cpp" line="2088"/>
         <source>More &amp;info...</source>
         <translation>Mehr &amp;info...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2100"/>
+        <location filename="../src/mainwindow.cpp" line="2121"/>
         <source>Reinstall</source>
         <translation>Neu installieren</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2120"/>
+        <location filename="../src/mainwindow.cpp" line="2141"/>
         <source>Problem detected during last operation, please inspect the console output.</source>
         <translation>Während des letzten Vorgangs wurde ein Problem festgestellt, bitte prüfen Sie die Konsolenausgabe.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2127"/>
+        <location filename="../src/mainwindow.cpp" line="2148"/>
         <source>Potentially dangerous operation.
 Please make sure you check carefully the list of packages to be removed.</source>
         <translation>Potentiell gefährlicher Vorgang.
@@ -666,27 +666,27 @@ Bitte überprüfen Sie sorgfältig die Liste der zu entfernenden Packstücke.</t
         <translation>Nicht abnehmbar</translation>
     </message>
     <message>
-        <location filename="../src/remotes.cpp" line="87"/>
+        <location filename="../src/remotes.cpp" line="88"/>
         <source>Flathub is the main Flatpak remote and won&apos;t be removed</source>
         <translation>Flathub ist die Haupt-Flatpak-Fernbedienung und wird nicht entfernt werden</translation>
     </message>
     <message>
-        <location filename="../src/remotes.cpp" line="102"/>
+        <location filename="../src/remotes.cpp" line="107"/>
         <source>Error adding remote</source>
         <translation>Error adding remote</translation>
     </message>
     <message>
-        <location filename="../src/remotes.cpp" line="102"/>
+        <location filename="../src/remotes.cpp" line="108"/>
         <source>Could not add remote - command returned an error. Please double-check the remote address and try again</source>
         <translation>Remote kann nicht hinzugefügt werden - der Befehl hat einen Fehler zurückgegeben. Bitte überprüfen Sie die Adresse der Gegenstelle und versuchen Sie es erneut</translation>
     </message>
     <message>
-        <location filename="../src/remotes.cpp" line="106"/>
+        <location filename="../src/remotes.cpp" line="112"/>
         <source>Success</source>
         <translation>Erfolg</translation>
     </message>
     <message>
-        <location filename="../src/remotes.cpp" line="106"/>
+        <location filename="../src/remotes.cpp" line="112"/>
         <source>Remote added successfully</source>
         <translation>Remote erfolgreich hinzugefügt</translation>
     </message>
