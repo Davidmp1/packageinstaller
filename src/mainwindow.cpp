@@ -369,7 +369,7 @@ void processMap(MainWindow& window, const std::string& parent_category, ryml::No
         }
     };
 
-    for (auto&& map : root_map.children()) {
+    for (auto&& map : std::move(root_map).children()) {
         std::string category{};
         for (auto&& map_child : map.children()) {
             if (map_child.has_val() && !map_child.has_val_tag()) {
@@ -1352,6 +1352,7 @@ void MainWindow::disableWarning(bool checked) {
 }
 
 // Display info when clicking the "info" icon of the package
+// NOLINTNEXTLINE
 void MainWindow::displayInfo(const QTreeWidgetItem* item, int column) const {
     if (column != PopCol::Info || item->childCount() > 0) {
         return;
