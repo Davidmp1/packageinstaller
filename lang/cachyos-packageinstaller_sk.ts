@@ -18,7 +18,7 @@
         <location filename="../src/mainwindow.ui" line="83"/>
         <location filename="../src/mainwindow.cpp" line="119"/>
         <source>Package</source>
-        <translation>Balík</translation>
+        <translation>Balíček</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="88"/>
@@ -737,7 +737,7 @@ Je to potrebné pre správne fungovanie aplikácie.</translation>
     <message>
         <location filename="../src/main.cpp" line="195"/>
         <source>Please don&apos;t run that application as root user!</source>
-        <translation type="unfinished"></translation>
+        <translation>Prosím nespúšťajte túto aplikáciu ako root!</translation>
     </message>
     <message>
         <source>Please run that application as root user!</source>
