@@ -20,6 +20,8 @@
 
 #include <sys/utsname.h>
 
+#include <memory>
+
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
 
@@ -585,22 +587,21 @@ auto trans_init(alpm_handle_t* handle, std::int32_t flags) noexcept -> std::int3
 }
 
 void print_broken_dep(alpm_handle_t* handle, alpm_depmissing_t* miss) noexcept {
-    char* depstring        = alpm_dep_compute_string(miss->depend);
+    const std::unique_ptr<char> depstring{alpm_dep_compute_string(miss->depend)};
     alpm_list_t* trans_add = alpm_trans_get_add(handle);
     if (miss->causingpkg == nullptr) {
         /* package being installed/upgraded has unresolved dependency */
         spdlog::warn("unable to satisfy dependency '{}' required by {}",
-            depstring, miss->target);
+            depstring.get(), miss->target);
     } else if (auto* pkg = alpm_pkg_find(trans_add, miss->causingpkg)) {
         /* upgrading a package breaks a local dependency */
         spdlog::warn("installing {} ({}) breaks dependency '{}' required by {}",
-            miss->causingpkg, alpm_pkg_get_version(pkg), depstring, miss->target);
+            miss->causingpkg, alpm_pkg_get_version(pkg), depstring.get(), miss->target);
     } else {
         /* removing a package breaks a local dependency */
         spdlog::warn("removing {} breaks dependency '{}' required by {}",
-            miss->causingpkg, depstring, miss->target);
+            miss->causingpkg, depstring.get(), miss->target);
     }
-    free(depstring);
 }
 
 auto sync_prepare_execute(alpm_handle_t* handle, std::string& conflict_msg) noexcept -> std::int32_t {
@@ -638,15 +639,11 @@ auto sync_prepare_execute(alpm_handle_t* handle, std::string& conflict_msg) noex
                     conflict_msg += fmt::format("'{}' and '{}' are in conflict\n", pkg_conflict1, pkg_conflict2);
                     spdlog::info("'{}' and '{}' are in conflict", pkg_conflict1, pkg_conflict2);
                 } else {
-                    char* reason = alpm_dep_compute_string(conflict->reason);
-
-                    const std::string_view reason_str = reason ? reason : "null";
+                    const std::unique_ptr<char> reason{alpm_dep_compute_string(conflict->reason)};
+                    const std::string_view reason_str = reason ? reason.get() : "null";
 
                     conflict_msg += fmt::format("'{}' and '{}' are in conflict ({})\n", pkg_conflict1, pkg_conflict2, reason_str);
                     spdlog::info("'{}' and '{}' are in conflict ({})", pkg_conflict1, pkg_conflict2, reason_str);
-                    if (reason != nullptr) {
-                        free(reason);
-                    }
                 }
                 alpm_conflict_free(conflict);
             }
