@@ -131,7 +131,7 @@ class MainWindow : public QDialog {
     void displayFlatpaks(bool force_update = false) noexcept;
     void displayPackages() noexcept;
     void displayPopularApps() const noexcept;
-    void displayWarning(const QString& repo) noexcept;
+    void displayWarning(std::string_view repo) noexcept;
     void enableTabs(bool enable) noexcept;
     void ifDownloadFailed() noexcept;
     void listFlatpakRemotes() noexcept;
@@ -164,9 +164,9 @@ class MainWindow : public QDialog {
 
     static auto addSizes(const QString& arg1, const QString& arg2) noexcept -> QString;
     auto get_package_version(std::string_view name) noexcept -> std::string;
-    auto listFlatpaks(const QString& remote, const QString& type = "") noexcept -> QStringList;
+    auto listFlatpaks(const QString& remote, std::string_view type = "") noexcept -> QStringList;
     auto listInstalled() noexcept -> QStringList;
-    auto listInstalledFlatpaks(const std::string_view& type = "") -> QStringList;
+    auto listInstalledFlatpaks(std::string_view type = "") -> QStringList;
 
     QString m_version{};
 

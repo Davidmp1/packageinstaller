@@ -76,7 +76,7 @@ namespace INIStringUtil {
         });
     }
 #endif
-    inline void replace(std::string& str, const std::string_view& a, const std::string_view& b) noexcept {
+    inline void replace(std::string& str, std::string_view a, std::string_view b) noexcept {
         if (!a.empty()) {
             std::size_t pos = 0;
             while ((pos = str.find(a, pos)) != std::string::npos) {
@@ -294,7 +294,7 @@ class INIReader {
     }
 
  public:
-    explicit INIReader(const std::string_view& filename, bool keepLineData = false) noexcept {
+    explicit INIReader(std::string_view filename, bool keepLineData = false) noexcept {
         fileReadStream.open(filename.data(), std::ios::in | std::ios::binary);
         if (keepLineData) {
             lineData = std::make_shared<T_LineData>();
@@ -345,7 +345,7 @@ class INIFile {
     std::string_view m_filename{};
 
  public:
-    explicit INIFile(const std::string_view& filename)
+    explicit INIFile(std::string_view filename)
       : m_filename(filename) { }
 
     ~INIFile() = default;

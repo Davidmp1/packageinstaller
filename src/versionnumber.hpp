@@ -31,11 +31,11 @@ class VersionNumber final {
  public:
     VersionNumber() noexcept                           = default;
     VersionNumber(const VersionNumber& value) noexcept = default;  // copy constructor
-    explicit VersionNumber(const std::string_view& value) noexcept : str(value) { }
+    explicit VersionNumber(std::string_view value) noexcept : str(value) { }
     ~VersionNumber() noexcept = default;
 
     [[nodiscard]] std::string_view toStringView() const noexcept { return str.c_str(); }
-    [[nodiscard]] std::string toString() const noexcept { return str; }
+    [[nodiscard]] const std::string& toString() const noexcept { return str; }
     [[nodiscard]] QStringView toQStringView() const noexcept { return {reinterpret_cast<const QChar*>(str.c_str())}; }
     [[nodiscard]] QString toQString() const noexcept { return {str.c_str()}; }
 

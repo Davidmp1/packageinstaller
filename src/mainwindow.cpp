@@ -205,13 +205,15 @@ void MainWindow::setup() noexcept {
 
 // Uninstall listed packages
 bool MainWindow::uninstall(const QString& names) noexcept {
+    using namespace std::string_view_literals;
+
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->setCurrentWidget(m_ui->tabOutput);
 
     // simulate install of selections and present for confirmation
     // if user selects cancel, break routine but return success to avoid error message
     bool is_ok{};
-    if (!confirmActions(names, "remove", is_ok)) {
+    if (!confirmActions(names, "remove"sv, is_ok)) {
         return true;
     }
 
@@ -825,13 +827,14 @@ void MainWindow::displayFlatpaks(bool force_update) noexcept {
 }
 
 // Display warning
-void MainWindow::displayWarning(const QString& repo) noexcept {
+void MainWindow::displayWarning(std::string_view repo) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     bool* displayed = nullptr;
     QString msg;
 
-    if (repo == "flatpaks") {
+    using namespace std::string_view_literals;
+    if (repo == "flatpaks"sv) {
         displayed = &m_warning_flatpaks;
         msg       = tr("CachyOS includes this repository of flatpaks for the users' convenience only, and "
                              "is not responsible for the functionality of the individual flatpaks themselves. "
@@ -875,6 +878,8 @@ void MainWindow::listFlatpakRemotes() noexcept {
 
 // Display warning
 bool MainWindow::confirmActions(const QString& names, std::string_view action, bool& is_ok) noexcept {
+    using namespace std::string_view_literals;
+
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     std::vector<std::string> change_list(static_cast<std::size_t>(m_change_list.size()));
@@ -897,7 +902,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
         const auto& name_list = ::utils::make_multiline(names.toStdString(), delim);
 
         is_ok = true;
-        if (action == "install") {
+        if (action == "install"sv) {
             alpm::add_targets_to_install(m_handle, name_list);
         } else {
             alpm::add_targets_to_remove(m_handle, name_list);
@@ -906,7 +911,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
         alpm_trans_release(m_handle);
 
         alpm::refresh_alpm(&m_handle, m_alpm_err);
-        if (action == "install") {
+        if (action == "install"sv) {
             is_ok = (alpm::sync_trans(m_handle, name_list, ALPM_TRANS_FLAG_ALLDEPS | ALPM_TRANS_FLAG_ALLEXPLICIT | ALPM_TRANS_FLAG_NOLOCK, msg_ok_status) == 0);
         }
     }
@@ -931,7 +936,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
     }
 
     if (m_tree != m_ui->treeFlatpak) {
-        if (action == "install") {
+        if (action == "install"sv) {
             detailed_to_install = detailed_names;
         } else {
             detailed_removed_names = detailed_names;
@@ -943,11 +948,11 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
             detailed_to_install.prepend(tr("Install") + '\n');
         }
     } else {
-        if (action == "remove") {
+        if (action == "remove"sv) {
             detailed_removed_names = m_change_list.join('\n');
             detailed_to_install.clear();
         }
-        if (action == "install") {
+        if (action == "install"sv) {
             detailed_to_install = m_change_list.join('\n');
             detailed_removed_names.clear();
         }
@@ -959,7 +964,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
     msgBox.setText(msg);
     msgBox.setInformativeText("\n" + names + "\n\n" + summary.c_str());
 
-    if (action == "install") {
+    if (action == "install"sv) {
         msgBox.setDetailedText(detailed_to_install + "\n" + detailed_removed_names);
     } else {
         msgBox.setDetailedText(detailed_removed_names + "\n" + detailed_to_install);
@@ -977,6 +982,7 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
 
 // Install the list of apps
 bool MainWindow::install(const QString& names) noexcept {
+    using namespace std::string_view_literals;
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
 
     m_ui->tabWidget->setTabText(m_ui->tabWidget->indexOf(m_ui->tabOutput), tr("Installing packages..."));
@@ -984,7 +990,7 @@ bool MainWindow::install(const QString& names) noexcept {
     // simulate install of selections and present for confirmation
     // if user selects cancel, break routine but return success to avoid error message
     bool is_ok{};
-    if (!confirmActions(names, "install", is_ok)) {
+    if (!confirmActions(names, "install"sv, is_ok)) {
         return true;
     }
 
@@ -1228,7 +1234,9 @@ QStringList MainWindow::listInstalled() noexcept {
 }
 
 // Return list flatpaks from current remote
-QStringList MainWindow::listFlatpaks(const QString& remote, const QString& type) noexcept {
+QStringList MainWindow::listFlatpaks(const QString& remote, std::string_view type) noexcept {
+    using namespace std::string_view_literals;
+
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     static bool updated = false;
 
@@ -1245,7 +1253,7 @@ QStringList MainWindow::listFlatpaks(const QString& remote, const QString& type)
         updated = true;
     }
     // list version too, unfortunatelly the resulting string structure is different depending on type option
-    if (type == QLatin1String("--app") || type.isEmpty()) {
+    if (type == "--app"sv || type.empty()) {
         success      = m_cmd.run(QStringLiteral("flatpak remote-ls ") + m_user
                      + remote + ' ' + arch_fp + QStringLiteral(" --app --columns=ver,ref,installed-size 2>/dev/null"),
                  out);
@@ -1254,7 +1262,7 @@ QStringList MainWindow::listFlatpaks(const QString& remote, const QString& type)
             flatpak_list = QStringList();
         }
     }
-    if (type == QLatin1String("--runtime") || type.isEmpty()) {
+    if (type == "--runtime"sv || type.empty()) {
         success = m_cmd.run(QStringLiteral("flatpak remote-ls ") + m_user
                 + remote + ' ' + arch_fp + QStringLiteral(" --runtime --columns=branch,ref,installed-size 2>/dev/null"),
             out);
@@ -1273,7 +1281,7 @@ QStringList MainWindow::listFlatpaks(const QString& remote, const QString& type)
 }
 
 // list installed flatpaks by type: apps, runtimes, or all (if no type is provided)
-QStringList MainWindow::listInstalledFlatpaks(const std::string_view& type) {
+QStringList MainWindow::listInstalledFlatpaks(std::string_view type) {
     const auto& flatpak_cmd = fmt::format("flatpak list {} {} --columns=ref 2>/dev/null", m_user.toStdString(), type);
 
     QStringList installed_list;
@@ -1646,6 +1654,8 @@ void MainWindow::on_push_uninstall() noexcept {
 
 // Actions on switching the tabs
 void MainWindow::on_current_tab_changed(int index) noexcept {
+    using namespace std::string_view_literals;
+
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     m_ui->tabWidget->setTabText(m_ui->tabWidget->indexOf(m_ui->tabOutput), tr("Console Output"));
     m_ui->pushInstall->setEnabled(false);
@@ -1702,7 +1712,7 @@ void MainWindow::on_current_tab_changed(int index) noexcept {
         m_ui->searchBoxFlatpak->setText(search_str);
         enableTabs(true);
         setCurrentTree();
-        displayWarning("flatpaks");
+        displayWarning("flatpaks"sv);
         blockInterfaceFP(true);
 
         if (!checkInstalled("flatpak")) {
