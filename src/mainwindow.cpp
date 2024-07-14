@@ -32,9 +32,6 @@
 #include <ryml.hpp>
 #include <ryml_std.hpp>
 
-#include <range/v3/algorithm/all_of.hpp>
-#include <range/v3/algorithm/find_if.hpp>
-
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #elif defined(__GNUC__)
@@ -54,8 +51,9 @@
 #include <alpm.h>
 #include <alpm_list.h>
 
-#include <algorithm>
-#include <array>
+#include <algorithm>  // for all_of, find_if
+#include <array>      // for array
+#include <ranges>     // for ranges::*
 
 #include <QCoreApplication>
 #include <QFile>
@@ -1199,7 +1197,7 @@ bool MainWindow::checkInstalled(const QString& names) const noexcept {
         return false;
     }
 
-    return ranges::all_of(names.split('\n'), [this](auto&& name) { return m_installed_packages.contains(name.trimmed()); });
+    return std::ranges::all_of(names.split('\n'), [this](auto&& name) { return m_installed_packages.contains(name.trimmed()); });
 }
 
 // Return true if all the packages in the list are installed
@@ -1209,7 +1207,7 @@ bool MainWindow::checkInstalled(const QStringList& name_list) const noexcept {
         return false;
     }
 
-    return ranges::all_of(name_list, [this](auto&& name) { return m_installed_packages.contains(name); });
+    return std::ranges::all_of(name_list, [this](auto&& name) { return m_installed_packages.contains(name); });
 }
 
 // return true if all the items in the list are upgradable
@@ -1219,7 +1217,7 @@ bool MainWindow::checkUpgradable(const QStringList& name_list) const noexcept {
         return false;
     }
 
-    return ranges::all_of(name_list, [this](auto&& name) {
+    return std::ranges::all_of(name_list, [this](auto&& name) {
         auto item_list = m_tree->findItems(name, Qt::MatchExactly, TreeCol::Name);
         return !(item_list.isEmpty() || item_list.at(0)->text(TreeCol::Status) != QLatin1String("upgradable"));
     });
@@ -1301,7 +1299,7 @@ void MainWindow::setCurrentTree() noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     const QList list({m_ui->treePopularApps, m_ui->treeRepo, m_ui->treeFlatpak});
 
-    auto it = ranges::find_if(list, [](const auto& item) { return item->isVisible(); });
+    auto it = std::ranges::find_if(list, [](const auto& item) { return item->isVisible(); });
     if (it != list.end()) {
         m_tree = *it;
         updateInterface();
