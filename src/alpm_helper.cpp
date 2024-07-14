@@ -203,9 +203,8 @@ auto _display_targets(const std::vector<pm_target_t>& targets, bool verbose, std
     for (const auto& target : targets) {
         if (target.install != nullptr) {
             res += fmt::format("{}-{}", alpm_pkg_get_name(target.install), alpm_pkg_get_version(target.install));
-        } else if (isize == 0) {
-            res += fmt::format("{}-{}", alpm_pkg_get_name(target.remove), alpm_pkg_get_version(target.remove));
-        } else {
+        }
+        if (target.remove != nullptr) {
             res += fmt::format("{}-{} [removal]", alpm_pkg_get_name(target.remove), alpm_pkg_get_version(target.remove));
         }
 
