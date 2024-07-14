@@ -36,10 +36,6 @@ struct pm_target_t {
 /* callback to handle messages/notifications from libalpm */
 void cb_event(void* ctx, alpm_event_t* event);
 
-/* callback to handle display of progress */
-void cb_progress(void* ctx, alpm_progress_t event, const char* pkgname,
-    std::int32_t percent, size_t howmany, size_t remain);
-
 /* callback to handle messages/notifications from pacman library */
 __attribute__((format(printf, 3, 0))) void cb_log(void* ctx, alpm_loglevel_t level, const char* fmt, va_list args);
 
@@ -106,52 +102,6 @@ void cb_event(void* ctx, alpm_event_t* event) {
     }
 }
 
-void cb_progress(void* ctx, alpm_progress_t event, const char* pkgname, std::int32_t percent, size_t howmany, size_t remain) {
-    (void)ctx;
-    std::string_view opr{};
-    // set text of message to display
-    switch (event) {
-    case ALPM_PROGRESS_ADD_START:
-        opr = "installing";
-        break;
-    case ALPM_PROGRESS_UPGRADE_START:
-        opr = "upgrading";
-        break;
-    case ALPM_PROGRESS_DOWNGRADE_START:
-        opr = "downgrading";
-        break;
-    case ALPM_PROGRESS_REINSTALL_START:
-        opr = "reinstalling";
-        break;
-    case ALPM_PROGRESS_REMOVE_START:
-        opr = "removing";
-        break;
-    case ALPM_PROGRESS_CONFLICTS_START:
-        opr = "checking for file conflicts";
-        break;
-    case ALPM_PROGRESS_DISKSPACE_START:
-        opr = "checking available disk space";
-        break;
-    case ALPM_PROGRESS_INTEGRITY_START:
-        opr = "checking package integrity";
-        break;
-    case ALPM_PROGRESS_KEYRING_START:
-        opr = "checking keys in keyring";
-        break;
-    case ALPM_PROGRESS_LOAD_START:
-        opr = "loading package files";
-        break;
-    default:
-        return;
-    }
-
-    if (percent == 100) {
-        spdlog::info("({}/{}) {} done", remain, howmany, pkgname);
-        return;
-    }
-    spdlog::info("({}/{}) {}", remain, howmany, opr);
-}
-
 void cb_log(void* ctx, alpm_loglevel_t level, const char* fmt, va_list args) {
     (void)ctx;
     if (!fmt || strlen(fmt) == 0) {
@@ -184,16 +134,6 @@ void cb_log(void* ctx, alpm_loglevel_t level, const char* fmt, va_list args) {
     default:
         break;
     }
-}
-
-inline std::size_t replace_all(std::string& inout, const std::string_view& what, const std::string_view& with) {
-    std::size_t count{};
-    std::size_t pos{};
-    while (std::string::npos != (pos = inout.find(what.data(), pos, what.length()))) {
-        inout.replace(pos, what.length(), with.data(), with.length());
-        pos += with.length(), ++count;
-    }
-    return count;
 }
 
 void parse_repos(alpm_handle_t* handle) noexcept {
@@ -312,7 +252,6 @@ void setup_alpm(alpm_handle_t* handle) noexcept {
     parse_repos(handle);
 
     alpm_option_set_logcb(handle, cb_log, nullptr);
-    alpm_option_set_progresscb(handle, cb_progress, nullptr);
     alpm_option_set_eventcb(handle, cb_event, nullptr);
 }
 
