@@ -3,13 +3,13 @@ Simple Software Application Package Installer.
 
 Requirements
 ------------
-* C++20 feature required (tested with GCC 11.1.0 and Clang 13(clang will not compile it with libstdc++ 11.1.0 because of c++20 standard ranges library)
-Any compiler which support C++20 standard should work.
+* C++23 feature required (tested with GCC 14.1.1 and Clang 18)
+Any compiler which support C++23 standard should work.
 
 ######
 ## Installing from source
 
-This is tested on Arch Linux, but *any* recent Arch Linux based system with latest C++20 compiler should do:
+This is tested on Arch Linux, but *any* recent Arch Linux based system with latest C++23 compiler should do:
 
 ```sh
 sudo pacman -Sy \

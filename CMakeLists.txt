@@ -84,7 +84,7 @@ endif()
 
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
-target_compile_features(project_options INTERFACE cxx_std_20)
+target_compile_features(project_options INTERFACE cxx_std_23)
 
 # Files with translation sources. You should run lupdate manually when needed to regenerate them
 file(GLOB TS_FILES "${PROJECT_SOURCE_DIR}/lang/*.ts")
