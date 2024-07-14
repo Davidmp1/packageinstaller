@@ -19,26 +19,10 @@
 
 #include "versionnumber.hpp"
 
-#include <algorithm>  // for transform
-#include <string_view>
-#include <vector>
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wold-style-cast"
-
-#include <range/v3/algorithm/all_of.hpp>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/algorithm/sort.hpp>
-#include <range/v3/view/filter.hpp>
-#include <range/v3/view/split.hpp>
-#include <range/v3/view/transform.hpp>
-
-#pragma clang diagnostic pop
-#else
-#include <ranges>
-namespace ranges = std::ranges;
-#endif
+#include <algorithm>    // for transform, for_each
+#include <ranges>       // for ranges::*
+#include <string_view>  // for string_view
+#include <vector>       // for vector
 
 #if 0
 #include <fmt/core.h>
@@ -104,34 +88,42 @@ namespace utils {
 /// @param str The string to split.
 /// @param delim The delimiter to split the string.
 /// @return A range view representing the split lines.
-constexpr auto make_split_view(std::string_view str, char delim) noexcept {
+constexpr auto make_split_view(std::string_view str, char delim = '\n') noexcept {
     constexpr auto functor = [](auto&& rng) {
-        return std::string_view(&*rng.begin(), static_cast<size_t>(ranges::distance(rng)));
+        return std::string_view(&*rng.begin(), static_cast<size_t>(std::ranges::distance(rng)));
     };
     constexpr auto second = [](auto&& rng) { return rng != ""; };
 
     return str
-        | ranges::views::split(delim)
-        | ranges::views::transform(functor)
-        | ranges::views::filter(second);
+        | std::ranges::views::split(delim)
+        | std::ranges::views::transform(functor)
+        | std::ranges::views::filter(second);
 }
 
 /// @brief Split a string into multiple lines based on a delimiter.
 /// @param str The string to split.
 /// @param delim The delimiter to split the string.
 /// @return A vector of strings representing the split lines.
-[[nodiscard]] inline constexpr auto make_multiline(std::string_view str, char delim = '\n') noexcept -> std::vector<std::string> {
+constexpr auto make_multiline(std::string_view str, char delim = '\n') noexcept -> std::vector<std::string> {
     return [&]() constexpr {
         std::vector<std::string> lines{};
-        ranges::for_each(utils::make_split_view(str, delim), [&](auto&& rng) { lines.emplace_back(rng); });
+        std::ranges::for_each(utils::make_split_view(str, delim), [&](auto&& rng) { lines.emplace_back(rng); });
         return lines;
     }();
 }
 
-auto make_multiline(const std::vector<std::string_view>& multiline, const std::string_view&& delim) noexcept -> std::string;
+constexpr auto make_multiline(const std::vector<std::string_view>& multiline, std::string_view delim) noexcept -> std::string {
+    std::string res{};
+    for (const auto& line : multiline) {
+        res += line;
+        res += delim.data();
+    }
+
+    return res;
+}
 
 template <std::input_iterator I, std::sentinel_for<I> S>
-auto make_multiline_range(I first, S last, const std::string_view&& delim) noexcept -> std::string {
+constexpr auto make_multiline_range(I first, S last, const std::string_view&& delim) noexcept -> std::string {
     std::string res{};
     for (; first != last; ++first) {
         res += *first;
@@ -139,6 +131,7 @@ auto make_multiline_range(I first, S last, const std::string_view&& delim) noexc
     }
     return res;
 }
+
 }  // namespace utils
 
 #endif  // UTILS_HPP

@@ -16,27 +16,10 @@
 
 #include "utils.hpp"
 
-#include <algorithm>  // for transform
-#include <string_view>
-#include <vector>
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wold-style-cast"
-
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/algorithm/reverse.hpp>
-#include <range/v3/view/filter.hpp>
-#include <range/v3/view/split.hpp>
-#include <range/v3/view/transform.hpp>
-
-#pragma clang diagnostic pop
-#else
-#include <ranges>
-namespace ranges = std::ranges;
-#endif
-
 #if 0
+#include <pair>           // for pair
+#include <unordered_map>  // for unordered_map
+
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
@@ -93,17 +76,3 @@ struct formatter<QStringList> {
 };
 }  // namespace fmt
 #endif
-
-namespace utils {
-
-auto make_multiline(const std::vector<std::string_view>& multiline, const std::string_view&& delim) noexcept -> std::string {
-    std::string res{};
-    for (const auto& line : multiline) {
-        res += line;
-        res += delim.data();
-    }
-
-    return res;
-}
-
-}  // namespace utils

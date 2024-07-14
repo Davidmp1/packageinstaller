@@ -32,6 +32,7 @@
 #include <ryml.hpp>
 #include <ryml_std.hpp>
 
+#include <range/v3/algorithm/all_of.hpp>
 #include <range/v3/algorithm/find_if.hpp>
 
 #if defined(__clang__)
