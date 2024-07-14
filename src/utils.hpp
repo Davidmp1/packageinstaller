@@ -112,24 +112,22 @@ constexpr auto make_multiline(std::string_view str, char delim = '\n') noexcept 
     }();
 }
 
-constexpr auto make_multiline(const std::vector<std::string_view>& multiline, std::string_view delim) noexcept -> std::string {
-    std::string res{};
-    for (const auto& line : multiline) {
-        res += line;
-        res += delim.data();
-    }
-
-    return res;
+/// @brief Join a vector of strings into a single string using a delimiter.
+/// @param lines The lines to join.
+/// @param delim The delimiter to join the lines.
+/// @return The joined lines as a single string.
+constexpr auto join(const std::vector<std::string_view>& lines, char delim = '\n') noexcept -> std::string {
+    return lines | std::ranges::views::join_with(delim) | std::ranges::to<std::string>();
 }
 
+/// @brief Join a range into a single string using a delimiter.
+/// @param first The range begin.
+/// @param last The range end.
+/// @param delim The delimiter to join the range.
+/// @return The joined range as a single string.
 template <std::input_iterator I, std::sentinel_for<I> S>
-constexpr auto make_multiline_range(I first, S last, const std::string_view&& delim) noexcept -> std::string {
-    std::string res{};
-    for (; first != last; ++first) {
-        res += *first;
-        res += delim.data();
-    }
-    return res;
+constexpr auto join_range(I first, S last, char delim = '\n') noexcept -> std::string {
+    return std::ranges::subrange(first, last) | std::ranges::views::join_with(delim) | std::ranges::to<std::string>();
 }
 
 }  // namespace utils

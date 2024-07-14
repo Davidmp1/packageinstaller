@@ -455,7 +455,7 @@ void MainWindow::processFile(const std::string& group, const std::string& catego
         description = QString(pkg->desc.data());
     }
 
-    install_names   = QString::fromStdString(fmt::format("{} {}", names[0], utils::make_multiline_range(names.begin() + 1, names.end(), " ")));
+    install_names   = QString::fromStdString(fmt::format("{} {}", names[0], utils::join_range(names.begin() + 1, names.end(), ' ')));
     uninstall_names = install_names;
 
     QStringList templist;
