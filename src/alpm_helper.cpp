@@ -157,13 +157,18 @@ void parse_repos(alpm_handle_t* handle) noexcept {
                 const auto& archs = ::utils::make_multiline(it_nested.second, ' ');
                 for (const auto& arch : archs) {
                     if (arch == "auto") {
-                        struct utsname un { };
-                        uname(&un);
-                        char* tmp = un.machine;
-                        if (tmp != nullptr) {
-                            alpm_option_add_architecture(handle, tmp);
+                        alpm_list_t* physical_arches;
+                        physical_arches = alpm_option_get_physical_architectures(handle);
+
+                        for (alpm_list_t* i = physical_arches; i; i = alpm_list_next(i)) {
+                            auto* physical_arch = static_cast<char*>(i->data);
+                            if (physical_arch == nullptr) {
+                                continue;
+                            }
+                            alpm_option_add_architecture(handle, physical_arch);
                         }
-                        continue;
+                        alpm_list_free(physical_arches);
+                        break;
                     }
 
                     alpm_option_add_architecture(handle, arch.c_str());
