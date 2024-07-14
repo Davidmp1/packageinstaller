@@ -196,34 +196,6 @@ inline std::size_t replace_all(std::string& inout, const std::string_view& what,
     return count;
 }
 
-void parse_cachedirs(alpm_handle_t* handle) noexcept {
-    static constexpr auto cachedir = "/var/cache/pacman/pkg/";
-
-    auto* cachedirs = alpm_list_add(nullptr, const_cast<void*>(reinterpret_cast<const void*>(cachedir)));
-    alpm_option_set_cachedirs(handle, cachedirs);
-}
-
-void parse_includes(alpm_handle_t* handle, alpm_db_t* db, std::string_view section, std::string_view file) noexcept {
-    const auto* archs           = alpm_option_get_architectures(handle);
-    const std::string_view arch = reinterpret_cast<const char*>(archs->data);
-
-    const mINI::INIFile file_nested(file);
-    // next, create a structure that will hold data
-    mINI::INIStructure mirrorlist;
-
-    // now we can read the file
-    file_nested.read(mirrorlist);
-    for (const auto& mirror : mirrorlist) {
-        auto repo = mirror.second.begin()->second;
-        if (repo.starts_with('/')) {
-            continue;
-        }
-        replace_all(repo, "$arch", arch);
-        replace_all(repo, "$repo", section);
-        alpm_db_add_server(db, repo.c_str());
-    }
-}
-
 void parse_repos(alpm_handle_t* handle) noexcept {
     static constexpr auto pacman_conf_path = "/etc/pacman.conf";
 
@@ -259,15 +231,7 @@ void parse_repos(alpm_handle_t* handle) noexcept {
             }
             continue;
         }
-        auto* db = alpm_register_syncdb(handle, section.c_str(), ALPM_SIG_USE_DEFAULT);
-
-        for (const auto& it_nested : nested) {
-            const auto& param = it_nested.first;
-            const auto& value = it_nested.second;
-            if (param == "include") {
-                parse_includes(handle, db, section, value);
-            }
-        }
+        alpm_register_syncdb(handle, section.c_str(), ALPM_SIG_USE_DEFAULT);
     }
 }
 
@@ -346,7 +310,6 @@ namespace alpm {
 
 void setup_alpm(alpm_handle_t* handle) noexcept {
     parse_repos(handle);
-    parse_cachedirs(handle);
 
     alpm_option_set_logcb(handle, cb_log, nullptr);
     alpm_option_set_progresscb(handle, cb_progress, nullptr);
