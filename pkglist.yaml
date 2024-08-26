@@ -23,12 +23,9 @@
     - chromium
     - ungoogled-chromium
     - vivaldi vivaldi-ffmpeg-codecs
-    - opera opera-ffmpeg-codecs
     - torbrowser-launcher
-    - otter-browser
     - brave-bin
     - falkon
-    - seamonkey
     - qutebrowser python-adblock
 
 - name: "Communication"
