@@ -170,17 +170,6 @@
     - soundwire
     - variety
 
-- name: "Pkgmngrs"
-  packages:
-    - gnome-firmware
-    - appimagelauncher
-    - octopi
-    - pamac-aur
-    - bauh
-    - discover packagekit-qt6
-    - gnome-software gnome-software-packagekit-plugin
-    - apper
-
 - name: "Video"
   packages:
     - kdenlive movit sox opus-tools frei0r-plugins opentimelineio dvgrab opencv
