@@ -165,11 +165,10 @@
 
 - name: "Other"
   packages:
-    - guiscrcpy
+    - scrcpy
     - droidcam
     - soundwire
     - variety
-    - conky-lua-nv conky-manager
 
 - name: "Pkgmngrs"
   packages:
