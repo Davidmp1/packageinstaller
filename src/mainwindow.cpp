@@ -1092,7 +1092,7 @@ bool MainWindow::installSelected() noexcept {
 
 // check if the name is filtered (lib, dev, dbg, etc.)
 bool MainWindow::isFilteredName(const QString& name) noexcept {
-    return ((name.startsWith(QLatin1String("lib")) && !name.startsWith(QLatin1String("libreoffice")))
+    return ((name.startsWith(QLatin1String("lib")) && !name.startsWith(QLatin1String("libre")))
         || name.endsWith(QLatin1String("-dev")) || name.endsWith(QLatin1String("-dbg")) || name.endsWith(QLatin1String("-dbgsym"))
         || name.endsWith(QLatin1String("-debug"))
         || name.endsWith(QLatin1String("-devel")));
