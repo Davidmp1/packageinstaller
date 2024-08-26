@@ -117,11 +117,6 @@
     - nitroshare
     - jdownloader2
 
-- name: "Kernels"
-  packages:
-    - linux-lts linux-lts-headers
-    - linux-hardened linux-hardened-headers
-
 - name: "Mail"
   packages:
     - thunderbird
