@@ -17,7 +17,7 @@
 - name: "Browsers"
   packages:
     - cachy-browser
-    - librewolf
+    - librewolf-bin
     - firefox
     - firefox-esr-bin
     - chromium
