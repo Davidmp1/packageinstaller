@@ -54,7 +54,6 @@
     - intellij-idea-community-edition
     - pycharm-community-edition
     - gitkraken
-    - github-desktop-bin
     - cockpit cockpit-machines
     - ansible
     - docker docker-compose
