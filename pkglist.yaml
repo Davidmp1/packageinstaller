@@ -123,11 +123,9 @@
     - kmail
     - evolution
     - geary
-    - trojita
     - mailspring
     - claws-mail
     - sylpheed
-    - seamonkey
 
 - name: "Multimedia"
   packages:
