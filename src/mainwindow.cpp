@@ -45,7 +45,6 @@
 #include "alpm_manager.hpp"
 #include "pacmancache.hpp"
 #include "utils.hpp"
-#include "version.hpp"
 #include "versionnumber.hpp"
 
 #include <algorithm>  // for all_of, find_if
@@ -1554,7 +1553,7 @@ void MainWindow::on_push_install() noexcept {
 // About button clicked
 void MainWindow::on_push_about() noexcept {
     const auto& msgbox_title = tr("About %1").arg(this->windowTitle());
-    const auto& msgbox_body  = "<p align=\"center\"><b><h2>" + this->windowTitle() + "</h2></b></p><p align=\"center\">" + tr("Version: ") + VERSION + "</p><p align=\"center\"><h3>" + tr("Package Installer for CachyOS") + R"(</h3></p><p align="center"><a href="http://cachyos.org">http://cachyos.org</a><br /></p><p align="center">)" + tr("Copyright (c) CachyOS") + "<br /><br /></p>";
+    const auto& msgbox_body  = "<p align=\"center\"><b><h2>" + this->windowTitle() + "</h2></b></p><p align=\"center\">" + tr("Version: ") + APP_VERSION + "</p><p align=\"center\"><h3>" + tr("Package Installer for CachyOS") + R"(</h3></p><p align="center"><a href="http://cachyos.org">http://cachyos.org</a><br /></p><p align="center">)" + tr("Copyright (c) CachyOS") + "<br /><br /></p>";
     about::display_about_msgbox(msgbox_title, msgbox_body,
         QStringLiteral("file:///usr/share/doc/cachyos-packageinstaller/license.html"));
 }

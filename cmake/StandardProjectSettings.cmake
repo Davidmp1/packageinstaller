@@ -77,3 +77,6 @@ option(ENABLE_DEVENV "Enable dev environment" ON)
 if(NOT ENABLE_DEVENV)
   add_definitions(-DNDEVENV)
 endif()
+
+# add project version
+add_definitions(-DAPP_VERSION="${PROJECT_VERSION}")
