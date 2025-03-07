@@ -35,19 +35,19 @@ pkg_check_modules(
 CPMAddPackage(
   NAME fmt
   GITHUB_REPOSITORY fmtlib/fmt
-  GIT_TAG 10.2.1
+  GIT_TAG 11.1.4
   EXCLUDE_FROM_ALL YES
 )
 CPMAddPackage(
   NAME spdlog
   GITHUB_REPOSITORY gabime/spdlog
-  GIT_TAG 62302019babd8fdf63c1c6dc4c9faa48d441a7f0
+  GIT_TAG 3335c380a08c5e0f5117a66622df6afdb3d74959
   EXCLUDE_FROM_ALL YES
 )
 CPMAddPackage(
   NAME cpr
-  GITHUB_REPOSITORY vnepogodin/cpr
-  GIT_TAG e9e157e0295120b269c1b58afdb71dab62f5fd8c
+  GITHUB_REPOSITORY libcpr/cpr
+  GIT_TAG 1.11.2
   EXCLUDE_FROM_ALL YES
 )
 CPMAddPackage(
