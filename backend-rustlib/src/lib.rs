@@ -48,9 +48,17 @@ mod ffi {
 
         fn sync_trans_pub(&mut self, targets: &Vec<String>) -> Result<String>;
 
-        fn prepare_add_trans_pub(&mut self, targets: &Vec<String>) -> Result<String>;
+        fn prepare_add_trans_pub(
+            &mut self,
+            targets: &Vec<String>,
+            conflict_msg: &mut String,
+        ) -> Result<()>;
 
-        fn prepare_remove_trans_pub(&mut self, targets: &Vec<String>) -> Result<String>;
+        fn prepare_remove_trans_pub(
+            &mut self,
+            targets: &Vec<String>,
+            conflict_msg: &mut String,
+        ) -> Result<()>;
 
         fn display_install_targets_pub(
             &mut self,
@@ -415,24 +423,30 @@ impl AlpmManager {
         self.process_targname(&dblist, target.pkg)
     }
 
-    pub fn prepare_add_trans_pub(&mut self, targets: &Vec<String>) -> Result<String> {
-        let mut conflict_msg = String::new();
-        self.prepare_add_trans(targets, &mut conflict_msg)?;
-
-        Ok(conflict_msg)
+    pub fn prepare_add_trans_pub(
+        &mut self,
+        targets: &Vec<String>,
+        conflict_msg: &mut String,
+    ) -> Result<()> {
+        self.prepare_add_trans(targets, conflict_msg)
     }
 
-    fn prepare_add_trans(&mut self, targets: &[String], conflict_msg: &mut String) -> Result<()> {
+    fn prepare_add_trans(
+        &mut self,
+        targets: &[String],
+        conflict_msg: &mut String,
+    ) -> Result<()> {
         self.add_targets_to_install(targets).context("Failed to add targets to install")?;
 
         self.sync_prepare_execute(conflict_msg)
     }
 
-    pub fn prepare_remove_trans_pub(&mut self, targets: &Vec<String>) -> Result<String> {
-        let mut conflict_msg = String::new();
-        self.prepare_remove_trans(targets, &mut conflict_msg)?;
-
-        Ok(conflict_msg)
+    pub fn prepare_remove_trans_pub(
+        &mut self,
+        targets: &Vec<String>,
+        conflict_msg: &mut String,
+    ) -> Result<()> {
+        self.prepare_remove_trans(targets, conflict_msg)
     }
 
     fn prepare_remove_trans(

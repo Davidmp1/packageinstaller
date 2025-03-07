@@ -99,26 +99,30 @@ auto AlpmManager::sync_trans(const std::vector<std::string>& targets, std::strin
 }
 
 auto AlpmManager::prepare_add_trans(const std::vector<std::string>& targets, std::string& conflict_msg) noexcept -> std::int32_t {
+    ::rust::String conflictmsg_rust;
     try {
-        const auto targets_rust     = convert_std_vec_into_rustvec(targets);
-        const auto conflictmsg_rust = m_manager->prepare_add_trans_pub(targets_rust);
-        conflict_msg                = std::string(conflictmsg_rust);
+        const auto targets_rust = convert_std_vec_into_rustvec(targets);
+        m_manager->prepare_add_trans_pub(targets_rust, conflictmsg_rust);
     } catch (const std::exception& e) {
         spdlog::error("failed to prepare install trans: {}", e.what());
+        conflict_msg = std::string(conflictmsg_rust);
         return 1;
     }
+    conflict_msg = std::string(conflictmsg_rust);
     return 0;
 }
 
 auto AlpmManager::prepare_remove_trans(const std::vector<std::string>& targets, std::string& conflict_msg) noexcept -> std::int32_t {
+    ::rust::String conflictmsg_rust;
     try {
-        const auto targets_rust     = convert_std_vec_into_rustvec(targets);
-        const auto conflictmsg_rust = m_manager->prepare_remove_trans_pub(targets_rust);
-        conflict_msg                = std::string(conflictmsg_rust);
+        const auto targets_rust = convert_std_vec_into_rustvec(targets);
+        m_manager->prepare_remove_trans_pub(targets_rust, conflictmsg_rust);
     } catch (const std::exception& e) {
         spdlog::error("failed to prepare remove trans: {}", e.what());
+        conflict_msg = std::string(conflictmsg_rust);
         return 1;
     }
+    conflict_msg = std::string(conflictmsg_rust);
     return 0;
 }
 
