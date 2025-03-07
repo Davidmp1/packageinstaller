@@ -849,8 +849,7 @@ void MainWindow::displayWarning(std::string_view repo) noexcept {
         return;
     }
 
-    QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), msg);
-    msgBox.addButton(QMessageBox::Close);
+    QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), msg, QMessageBox::Close, this);
     auto* cb = new QCheckBox();
     msgBox.setCheckBox(cb);
     cb->setText(tr("Do not show this message again"));
@@ -913,27 +912,32 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
             detailed_names = QString::fromStdString(m_alpm_manager->display_remove_targets(name_list, true, summary));
         }
 
-        m_alpm_manager->refresh_alpm();
         if (action == "install"sv) {
             is_ok = (m_alpm_manager->prepare_add_trans(name_list, msg_ok_status) == 0);
         }
+        m_alpm_manager->refresh_alpm();
     }
 
     if ((m_tree != m_ui->treeFlatpak) && (!is_ok)) {
         QMessageBox msgBox(this);
         msg = "<b>The following packages have conflicts.</b>";
         msgBox.setText(msg);
-        msgBox.setInformativeText("\n" + names + "\n\n" + msg_ok_status.c_str());
+        msgBox.setInformativeText("\n" + names + "\n\n" + QString::fromStdString(msg_ok_status));
 
-        msgBox.addButton("Replace", QMessageBox::ButtonRole::AcceptRole);
-        msgBox.addButton("Ignore", QMessageBox::ButtonRole::RejectRole);
+        auto* replaceBtn = msgBox.addButton("Replace", QMessageBox::AcceptRole);
+        auto* ignoreBtn  = msgBox.addButton("Ignore", QMessageBox::RejectRole);
+
+        // set default action(e.g. on close/reject) to ignore
+        msgBox.setDefaultButton(ignoreBtn);
 
         // make it wider
         auto* horizontalSpacer = new QSpacerItem(600, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
         auto* layout           = qobject_cast<QGridLayout*>(msgBox.layout());
         layout->addItem(horizontalSpacer, 0, 1);
 
-        if (msgBox.exec() != QMessageBox::AcceptRole) {
+        // as we added custom buttons, we cannot use return value of exec
+        msgBox.exec();
+        if (msgBox.clickedButton() != replaceBtn) {
             return false;
         }
     }
@@ -965,7 +969,9 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
 
     QMessageBox msgBox(this);
     msgBox.setText(msg);
-    msgBox.setInformativeText("\n" + names + "\n\n" + summary.c_str());
+    msgBox.setInformativeText("\n" + names + "\n\n" + QString::fromStdString(summary));
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
 
     if (action == "install"sv) {
         msgBox.setDetailedText(detailed_to_install + "\n" + detailed_removed_names);
@@ -973,13 +979,11 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
         msgBox.setDetailedText(detailed_removed_names + "\n" + detailed_to_install);
     }
 
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.addButton(QMessageBox::Cancel);
-
     // make it wider
     auto* horizontalSpacer = new QSpacerItem(600, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
     auto* layout           = qobject_cast<QGridLayout*>(msgBox.layout());
     layout->addItem(horizontalSpacer, 0, 1);
+
     return msgBox.exec() == QMessageBox::Ok;
 }
 
