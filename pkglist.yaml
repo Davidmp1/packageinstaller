@@ -48,7 +48,6 @@
     - netbeans
     - intellij-idea-community-edition
     - pycharm-community-edition
-    - gitkraken
     - cockpit cockpit-machines
     - ansible
     - docker docker-compose
