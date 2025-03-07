@@ -42,14 +42,11 @@
 #include "ui_mainwindow.h"
 
 #include "about.hpp"
-#include "alpm_helper.hpp"
+#include "alpm_manager.hpp"
 #include "pacmancache.hpp"
 #include "utils.hpp"
 #include "version.hpp"
 #include "versionnumber.hpp"
-
-#include <alpm.h>
-#include <alpm_list.h>
 
 #include <algorithm>  // for all_of, find_if
 #include <array>      // for array
@@ -72,12 +69,22 @@ namespace fs = std::filesystem;
 
 MainWindow::MainWindow(QWidget* parent) : QDialog(parent),
                                           m_ui(new Ui::MainWindow) {
-    spdlog::debug("{} version:{}", QCoreApplication::applicationName().toStdString(), VERSION);
-
     m_ui->setupUi(this);
-    setProgressDialog();
 
-    alpm::setup_alpm(m_handle);
+    setAttribute(Qt::WA_NativeWindow);
+    setWindowFlags(Qt::Window);  // for the close, min and max buttons
+
+    {
+        auto alpm_manager = alpm::AlpmManager::init_alpm_manager();
+        if (alpm_manager.has_value()) {
+            m_alpm_manager = std::make_unique<alpm::AlpmManager>(std::move(*alpm_manager));
+        } else {
+            QMessageBox::critical(this, tr("CachyOS Package Installer"), tr("Cannot initialize ALPM library"));
+            return;
+        }
+    }
+
+    setProgressDialog();
 
     connect(&m_timer, &QTimer::timeout, this, &MainWindow::updateBar);
     connect(&m_cmd, &Cmd::started, this, &MainWindow::cmdStart);
@@ -93,7 +100,6 @@ MainWindow::MainWindow(QWidget* parent) : QDialog(parent),
 }
 
 MainWindow::~MainWindow() {
-    alpm::destroy_alpm(m_handle);
     delete m_ui;
 }
 
@@ -451,7 +457,7 @@ void MainWindow::processFile(const std::string& group, const std::string& catego
     QString install_names;
     QString uninstall_names;
 
-    if (auto pkg = alpm::get_package_view(m_handle, names[0])) {
+    if (auto pkg = m_alpm_manager->get_package_view(names[0])) {
         description = QString(pkg->desc.data());
     }
 
@@ -902,16 +908,14 @@ bool MainWindow::confirmActions(const QString& names, std::string_view action, b
 
         is_ok = true;
         if (action == "install"sv) {
-            alpm::add_targets_to_install(m_handle, name_list);
+            detailed_names = QString::fromStdString(m_alpm_manager->display_install_targets(name_list, true, summary));
         } else {
-            alpm::add_targets_to_remove(m_handle, name_list);
+            detailed_names = QString::fromStdString(m_alpm_manager->display_remove_targets(name_list, true, summary));
         }
-        detailed_names = alpm::display_targets(m_handle, true, summary).c_str();
-        alpm_trans_release(m_handle);
 
-        alpm::refresh_alpm(&m_handle, m_alpm_err);
+        m_alpm_manager->refresh_alpm();
         if (action == "install"sv) {
-            is_ok = (alpm::sync_trans(m_handle, name_list, ALPM_TRANS_FLAG_ALLDEPS | ALPM_TRANS_FLAG_ALLEXPLICIT | ALPM_TRANS_FLAG_NOLOCK, msg_ok_status) == 0);
+            is_ok = (m_alpm_manager->prepare_add_trans(name_list, msg_ok_status) == 0);
         }
     }
 
@@ -1102,7 +1106,7 @@ bool MainWindow::isFilteredName(const QString& name) noexcept {
 bool MainWindow::buildPackageLists(bool force_download) noexcept {
     spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
     clearUi();
-    if (!downloadPackageList(force_download)) {
+    if (!fetchPackageList(force_download)) {
         ifDownloadFailed();
         return false;
     }
@@ -1110,19 +1114,14 @@ bool MainWindow::buildPackageLists(bool force_download) noexcept {
     return true;
 }
 
-// Download the Packages.gz from sources
-bool MainWindow::downloadPackageList(bool force_download) noexcept {
-    spdlog::debug("+++ {} +++", __PRETTY_FUNCTION__);
-
-    m_progress->setLabelText(tr("Downloading package info..."));
+bool MainWindow::fetchPackageList(bool force) noexcept {
+    m_progress->setLabelText(tr("Fetching infomation about packages..."));
     m_pushCancel->setEnabled(true);
 
-    if (m_repo_list.empty() || force_download) {
-        if (force_download) {
-            m_progress->show();
-        }
+    if (m_repo_list.empty() || force) {
         m_progress->show();
-        PacmanCache cache(m_handle);
+
+        PacmanCache cache(m_alpm_manager);
         m_repo_list     = cache.get_candidates();
         m_repo_upd_list = cache.get_upgrade_candidates();
         if (m_repo_list.empty()) {
@@ -1185,7 +1184,7 @@ void MainWindow::cleanup() {
 
 // Get version of the package
 auto MainWindow::get_package_version(std::string_view name) noexcept -> std::string {
-    if (auto pkg = alpm::get_package_view(m_handle, name)) {
+    if (auto pkg = m_alpm_manager->get_package_view(name)) {
         return std::string{pkg->pkgver};
     }
     return {};
@@ -1939,7 +1938,7 @@ void MainWindow::buildChangeList(QTreeWidgetItem* item) noexcept {
 void MainWindow::on_push_force_update_repo() noexcept {
     m_ui->searchBoxRepo->clear();
     m_ui->comboFilterRepo->setCurrentIndex(0);
-    alpm::refresh_alpm(&m_handle, m_alpm_err);
+    m_alpm_manager->refresh_alpm();
     buildPackageLists(true);
 }
 

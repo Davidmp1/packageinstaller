@@ -56,6 +56,12 @@ CPMAddPackage(
   GIT_TAG 3ef11e1db3bd2ace816a8ea6386075cbe0dc0768
   EXCLUDE_FROM_ALL YES
 )
+CPMAddPackage(
+  NAME Corrosion
+  GITHUB_REPOSITORY corrosion-rs/corrosion
+  GIT_TAG f783ee84b4d6c0ea2bc2d77125c39e9e24546a7d
+  EXCLUDE_FROM_ALL YES
+)
 
 find_package(PolkitQt6-1 REQUIRED)
 
@@ -100,8 +106,9 @@ qt_add_executable(${PROJECT_NAME}
     images.qrc "${CMAKE_BINARY_DIR}/cachyospi_locale.qrc"
     src/ini.hpp
     src/utils.hpp src/utils.cpp
+    src/logging_utils.hpp src/logging_utils.cpp
     src/versionnumber.hpp
-    src/alpm_helper.hpp src/alpm_helper.cpp
+    src/alpm_manager.hpp src/alpm_manager.cpp
     src/pacmancache.hpp src/pacmancache.cpp
     src/remotes.hpp src/remotes.cpp
     src/about.hpp src/about.cpp
@@ -120,9 +127,12 @@ configure_linker(project_options)
 # sanitizer options if supported by compiler
 enable_sanitizers(project_options)
 
+corrosion_import_crate(MANIFEST_PATH "backend-rustlib/Cargo.toml" FLAGS "${CARGO_FLAGS}")
+corrosion_add_cxxbridge(backend-rustlib-cxxbridge CRATE backend_rustlib FILES lib.rs)
+
 include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE project_warnings project_options Qt6::Widgets Threads::Threads spdlog::spdlog fmt::fmt ryml::ryml cpr::cpr PkgConfig::LIBALPM)
+target_link_libraries(${PROJECT_NAME} PRIVATE project_warnings project_options Qt6::Widgets Threads::Threads spdlog::spdlog fmt::fmt ryml::ryml cpr::cpr backend-rustlib-cxxbridge PkgConfig::LIBALPM)
 
 option(ENABLE_UNITY "Enable Unity builds of projects" OFF)
 if(ENABLE_UNITY)

@@ -1,4 +1,4 @@
-// Copyright (C) 2022-2024 Vladislav Nepogodin
+// Copyright (C) 2022-2025 Vladislav Nepogodin
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,15 +17,17 @@
 #ifndef PACMANCACHE_HPP
 #define PACMANCACHE_HPP
 
-#include <alpm.h>
+#include "alpm_manager.hpp"
 
 #include <map>
+#include <memory>
+#include <utility>
 
 #include <QStringList>
 
 class PacmanCache {
  public:
-    explicit PacmanCache(alpm_handle_t* handle) : m_handle(handle) { refresh_list(); }
+    explicit PacmanCache(alpm::AlpmManagerPtr manager) : m_alpm_manager(std::move(manager)) { refresh_list(); }
 
     void refresh_list() noexcept;
 
@@ -35,7 +37,7 @@ class PacmanCache {
  private:
     QStringList m_upd_candidates;
     std::map<QString, QStringList> m_candidates;
-    alpm_handle_t* m_handle{};
+    alpm::AlpmManagerPtr m_alpm_manager{};
 };
 
 #endif  // PACMANCACHE_HPP
