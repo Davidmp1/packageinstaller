@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with mx-packageinstaller.  If not, see <http://www.gnu.org/licenses/>.
  **********************************************************************/
-// Copyright (C) 2022-2024 Vladislav Nepogodin
+// Copyright (C) 2022-2025 Vladislav Nepogodin
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "alpm_helper.hpp"
+#include "alpm_manager.hpp"
 #include "mainwindow.hpp"
 
 #include <unistd.h>
@@ -163,23 +163,11 @@ auto main(int argc, char** argv) -> std::int32_t {
 
     // Check if we have valid databases
     {
-        alpm_errno_t alpm_err{};
-        alpm_handle_t* handle = alpm_initialize("/", "/var/lib/pacman/", &alpm_err);
-        alpm::setup_alpm(handle);
-        size_t pkgcache_count{};
-        auto* dbs = alpm_get_syncdbs(handle);
-        for (alpm_list_t* i = dbs; i != nullptr; i = i->next) {
-            auto* db = reinterpret_cast<alpm_db_t*>(i->data);
-            pkgcache_count += alpm_list_count(alpm_db_get_pkgcache(db));
-        }
-
-        if (pkgcache_count == 0) {
+        if (!alpm::is_valid_alpm_dbs()) {
             QMessageBox::critical(nullptr, QObject::tr("Error"),
                 QObject::tr("No db found!\nPlease run `pacman -Sy` to update DB!\nThis is needed for the app to work properly"));
-            alpm_release(handle);
             return EXIT_FAILURE;
         }
-        alpm_release(handle);
     }
 
     // Root guard

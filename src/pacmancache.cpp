@@ -1,4 +1,4 @@
-// Copyright (C) 2022-2024 Vladislav Nepogodin
+// Copyright (C) 2022-2025 Vladislav Nepogodin
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,65 +15,27 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "pacmancache.hpp"
-#include "versionnumber.hpp"
 
-namespace {
-
-auto get_upgrade_packages(alpm_handle_t* handle) noexcept -> QStringList {
-    if (handle == nullptr) {
-        return {};
-    }
-
-    QStringList upgrade_packages;
-
-    auto* localdb = alpm_get_localdb(handle);
-    auto* syncdbs = alpm_get_syncdbs(handle);
-    for (alpm_list_t* i = alpm_db_get_pkgcache(localdb); i != nullptr; i = i->next) {
-        auto* lpkg           = reinterpret_cast<alpm_pkg_t*>(i->data);
-        const char* pkg_name = alpm_pkg_get_name(lpkg);
-
-        if (alpm_sync_get_new_version(lpkg, syncdbs) == nullptr) {
-            continue;
-        }
-
-        upgrade_packages << QString::fromUtf8(pkg_name);
-    }
-
-    return upgrade_packages;
-}
-
-}  // namespace
+#include <algorithm>  // for filter
+#include <ranges>     // for ranges::*
 
 void PacmanCache::refresh_list() noexcept {
-    QStringList package_list;
-    QStringList version_list;
-    QStringList description_list;
+    auto list_of_packages = m_alpm_manager->get_list_of_packages();
 
-    auto* dbs = alpm_get_syncdbs(m_handle);
-    for (alpm_list_t* i = dbs; i != nullptr; i = i->next) {
-        auto* db = reinterpret_cast<alpm_db_t*>(i->data);
-
-        auto* pkgcache = alpm_db_get_pkgcache(db);
-        for (alpm_list_t* j = pkgcache; j != nullptr; j = j->next) {
-            auto* pkg            = reinterpret_cast<alpm_pkg_t*>(j->data);
-            const char* pkg_name = alpm_pkg_get_name(pkg);
-            const char* pkg_desc = alpm_pkg_get_desc(pkg);
-            const char* pkg_ver  = alpm_pkg_get_version(pkg);
-
-            package_list << pkg_name;
-            version_list << pkg_ver;
-            description_list << pkg_desc;
-        }
+    // installed packages which have lower version than in syncdbs
+    QStringList upd_candidates;
+    for (auto package : list_of_packages | std::ranges::views::filter(&alpm::PackageView::upgradable)) {
+        auto&& package_name = QString::fromStdString(package.name);
+        upd_candidates << package_name;
     }
+    m_upd_candidates = std::move(upd_candidates);
 
-    m_upd_candidates = get_upgrade_packages(m_handle);
+    // all syncdb packages
+    for (auto&& package : list_of_packages) {
+        auto&& package_name = QString::fromStdString(std::move(package.name));
+        auto&& package_ver  = QString::fromStdString(std::move(package.pkgver));
+        auto&& package_desc = QString::fromStdString(std::move(package.desc));
 
-    for (int i = 0; i < package_list.size(); ++i) {
-        const auto& package = package_list.at(i);
-        const auto& version = version_list.at(i);
-        if (m_candidates.contains(package) && (VersionNumber(version.toStdString()) <= VersionNumber(m_candidates.at(package).at(0).toStdString()))) {
-            continue;
-        }
-        m_candidates[package] = (QStringList() << version << description_list.at(i));
+        m_candidates[package_name] = (QStringList() << package_ver << package_desc);
     }
 }

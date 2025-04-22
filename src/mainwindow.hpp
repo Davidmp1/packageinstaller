@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with mx-packageinstaller.  If not, see <http://www.gnu.org/licenses/>.
  **********************************************************************/
-// Copyright (C) 2022-2024 Vladislav Nepogodin
+// Copyright (C) 2022-2025 Vladislav Nepogodin
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include "alpm_manager.hpp"
 #include "cmd.hpp"
 #include "remotes.hpp"
 #include "versionnumber.hpp"
@@ -113,7 +114,7 @@ class MainWindow : public QDialog {
     [[nodiscard]] auto checkInstalled(const QStringList& name_list) const noexcept -> bool;
     [[nodiscard]] auto checkUpgradable(const QStringList& name_list) const noexcept -> bool;
     auto confirmActions(const QString& names, std::string_view action, bool& is_ok) noexcept -> bool;
-    auto downloadPackageList(bool force_download = false) noexcept -> bool;
+    auto fetchPackageList(bool force = false) noexcept -> bool;
     auto install(const QString& names) noexcept -> bool;
     auto installBatch(const QStringList& name_list) noexcept -> bool;
     auto installPopularApp(const QString& name) noexcept -> bool;
@@ -210,8 +211,8 @@ class MainWindow : public QDialog {
 
  private:
     Ui::MainWindow* m_ui{};
-    alpm_errno_t m_alpm_err{};
-    alpm_handle_t* m_handle = alpm_initialize("/", "/var/lib/pacman/", &m_alpm_err);
+
+    alpm::AlpmManagerPtr m_alpm_manager;
 
     QString m_indexFilterFP{};
     bool m_warning_flatpaks{};
